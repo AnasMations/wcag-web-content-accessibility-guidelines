@@ -7,5 +7,3 @@ A single-page, scrollable guide to WCAG 2.2. Each success criterion at Levels A,
 The page itself follows WCAG: skip link, visible focus, 44 px targets, a pause control for animations, and support for "reduce motion".
 
 Source: [W3C WCAG 2.2](https://www.w3.org/TR/WCAG22/). Examples are illustrative; check each criterion's full wording before auditing.
-
-Created by [AnasMations](https://github.com/AnasMations).
