@@ -125,27 +125,27 @@ details p{margin:6px 0 0;color:#374151;max-width:820px}
 .stamp{position:absolute;top:28px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:34px;letter-spacing:.06em;padding:4px 14px;border:5px solid;border-radius:10px;opacity:0;pointer-events:none;background:rgba(255,255,255,.92)}
 .stamp.fail{right:26px;color:#B42318;transform:rotate(12deg)}
 .stamp.pass{left:26px;color:#047857;transform:rotate(-12deg)}
-.sw-card.fly{transition:transform .35s ease-in,opacity .35s ease-in}
-@media (prefers-reduced-motion: reduce){.sw-card.fly{transition:none}.card-behind{transform:none}}
+.sw-card.fly{transition:transform .28s ease-in,opacity .28s ease-in}
+@keyframes sw-enter{from{transform:translateY(14px) scale(.96);opacity:.4}to{transform:none;opacity:1}}
+@keyframes sw-pop{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.03);opacity:1}100%{transform:none;opacity:1}}
+.sw-card.enter{animation:sw-enter .25s ease-out}
+.sw-toast-row{min-height:52px;display:flex;justify-content:center;align-items:center;margin-bottom:14px}
+.sw-toast{margin:0;padding:10px 18px;border-radius:999px;font-weight:600;font-size:16px;text-align:center}
+.sw-toast:empty{padding:0}
+.sw-toast.ok{background:#123A35;color:#A7F3D0;border:1.5px solid #34D399}
+.sw-toast.no{background:#43201F;color:#FECACA;border:1.5px solid #F97066}
+.sw-toast.pop{animation:sw-pop .3s ease-out}
+@media (prefers-reduced-motion: reduce){.sw-card.fly{transition:none}.card-behind{transform:none}.sw-card.enter,.sw-toast.pop{animation:none}}
 .swipe-btns{display:flex;justify-content:space-between;gap:16px;margin-top:28px}
 .swipe-btns .btn{flex:1;min-height:56px;font-size:18px}
 .sw-fail{background:#FEE4E2!important;color:#7A1A12!important}
 .sw-pass{background:#D1FAE5!important;color:#064E3B!important}
-.sw-reveal{margin-top:24px;background:#fff;color:#141A2E;border-radius:20px;padding:24px 26px}
-.sw-reveal .res{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;margin:0 0 6px}
-.sw-reveal .res.ok{color:#047857}
-.sw-reveal .res.no{color:#B42318}
-.sw-reveal .crit-name{font-size:20px;margin:0 0 6px}
-.sw-reveal .crit-name strong{font-family:'Space Grotesk',sans-serif}
-.sw-reveal p{margin:0 0 10px;color:#374151}
-.sw-reveal .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:12px}
-.sw-reveal .btn{background:#141A2E;color:#fff}
 .score{background:#fff;color:#141A2E;border-radius:16px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:28px auto 0;max-width:560px}
 .score p{margin:0;font-weight:600}
 .result{margin:24px auto 0;max-width:560px;background:#fff;color:#141A2E;border-radius:20px;padding:28px}
 .result h3{font-size:30px;margin-bottom:8px}
 .result ol{padding-left:22px;margin:12px 0 0}
-.result li{margin-bottom:6px}
+.result li{margin-bottom:10px;color:#374151}
 .result .ok{color:#047857;font-weight:700}
 .result .no{color:#B42318;font-weight:700}
 .btn{font:inherit;font-weight:700;min-height:48px;padding:0 24px;border-radius:999px;border:0;background:#fff;color:#141A2E;cursor:pointer}
@@ -1124,9 +1124,9 @@ footer{padding:40px 0;color:var(--muted);font-size:15px}
 <div style="display:flex;align-items:center;gap:16px;background:#141A2E;border-radius:12px;padding:16px 20px"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#FFFFFF;width:36px;height:36px;flex-shrink:0" viewbox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><p style="font-size:26px;color:#FFFFFF">Screen reader: “3D render of a ceramic lamp, slowly rotating”</p></div>
 </div></template>
 <div class="swipe" id="swipe">
+<div class="sw-toast-row"><p id="sw-toast" class="sw-toast" aria-live="polite"></p></div>
 <div class="deck-area"><div class="card-behind" aria-hidden="true"></div><div class="card-behind two" aria-hidden="true"></div><div id="card-slot"></div></div>
 <div class="swipe-btns"><button type="button" class="btn sw-fail" id="btn-fail"><span aria-hidden="true">←</span> Fails</button><button type="button" class="btn sw-pass" id="btn-pass">Passes <span aria-hidden="true">→</span></button></div>
-<div id="sw-reveal" class="sw-reveal" hidden tabindex="-1"></div>
 </div>
 <div class="score" aria-live="polite"><p id="score-text">0 of 10 swiped · 0 correct</p><button type="button" class="btn" id="reset" style="background:#141A2E;color:#fff">Start again</button></div>
 <div id="result" class="result" hidden tabindex="-1"></div>
@@ -1370,7 +1370,7 @@ const CARDS = [
 ];
 (function(){
   const slot = document.getElementById('card-slot');
-  const reveal = document.getElementById('sw-reveal');
+  const toast = document.getElementById('sw-toast');
   const bFail = document.getElementById('btn-fail'), bPass = document.getElementById('btn-pass');
   const scoreText = document.getElementById('score-text');
   const result = document.getElementById('result');
@@ -1379,7 +1379,6 @@ const CARDS = [
   const update = () => { scoreText.textContent = `${i} of ${CARDS.length} swiped · ${correct} correct`; };
 
   function renderCard(){
-    reveal.hidden = true; reveal.innerHTML = '';
     if (i >= CARDS.length) return finish();
     const c = CARDS[i];
     slot.innerHTML = `
@@ -1431,31 +1430,29 @@ const CARDS = [
     card.style.transform = `translateX(${saysPass ? 140 : -140}%) rotate(${saysPass ? 24 : -24}deg)`;
     card.style.opacity = 0;
     i++; update();
+    const hadFocus = card.contains(document.activeElement);
+    toast.className = 'sw-toast ' + (ok ? 'ok' : 'no');
+    toast.innerHTML = `<span aria-hidden="true">${ok ? '✓' : '✗'}</span> ${ok ? 'Correct' : 'Not quite'} · <strong>${c.pass ? 'Passes' : 'Fails'}</strong> ${c.crit}`;
+    void toast.offsetWidth; toast.classList.add('pop');
     setTimeout(() => {
-      slot.innerHTML = '';
-      reveal.innerHTML = `
-        <p class="res ${ok ? 'ok' : 'no'}">${ok ? 'Correct!' : 'Not quite.'} You swiped ${saysPass ? 'Passes' : 'Fails'}.</p>
-        <p class="crit-name">This example <strong>${c.pass ? 'passes' : 'fails'}</strong> <strong>${c.crit}</strong></p>
-        <p>${c.lvl}. ${c.why}</p>
-        <div class="row"><button type="button" class="btn" id="next">${i < CARDS.length ? 'Next card →' : 'See my score'}</button><a href="${c.link}">Review this criterion</a></div>`;
-      reveal.hidden = false;
-      reveal.querySelector('#next').addEventListener('click', () => { renderCard(); slot.querySelector('.sw-card')?.focus({preventScroll:true}); });
-      reveal.focus({preventScroll:true});
-    }, reduce.matches ? 0 : 360);
+      renderCard();
+      const next = slot.querySelector('.sw-card');
+      if (next){ next.classList.add('enter'); if (hadFocus) next.focus({preventScroll:true}); }
+    }, reduce.matches ? 0 : 280);
   }
 
   function finish(){
     slot.innerHTML = '';
     bFail.disabled = bPass.disabled = true;
     const msg = correct >= CARDS.length - 1 ? 'Excellent: you’re ready to audit your beta.' : correct >= Math.ceil(CARDS.length * 0.7) ? 'Good work. Revisit the ones you missed before auditing your beta.' : 'Worth another scroll through the examples, then try again.';
-    result.innerHTML = `<h3>You scored ${correct} out of ${CARDS.length}</h3><p>${msg}</p><ol>${log.map(r => `<li><span class="${r.ok ? 'ok' : 'no'}">${r.ok ? '✓' : '✗'}</span> ${r.c.crit}: ${r.c.pass ? 'passes' : 'fails'}</li>`).join('')}</ol>`;
+    result.innerHTML = `<h3>You scored ${correct} out of ${CARDS.length}</h3><p>${msg}</p><ol>${log.map(r => `<li><span class="${r.ok ? 'ok' : 'no'}">${r.ok ? '✓' : '✗'}</span> <strong>${r.c.crit}</strong> (${r.c.lvl}): ${r.c.pass ? 'passes' : 'fails'}. ${r.c.why} <a href="${r.c.link}">Review</a></li>`).join('')}</ol>`;
     result.hidden = false; result.focus();
   }
 
   bFail.addEventListener('click', () => decide(false));
   bPass.addEventListener('click', () => decide(true));
   document.getElementById('reset').addEventListener('click', () => {
-    i = 0; correct = 0; log = []; result.hidden = true; update(); renderCard();
+    i = 0; correct = 0; log = []; result.hidden = true; toast.textContent = ''; toast.className = 'sw-toast'; update(); renderCard();
     slot.querySelector('.sw-card')?.focus();
   });
   update(); renderCard();
