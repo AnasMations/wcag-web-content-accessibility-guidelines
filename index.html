@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WCAG 2.2 in Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A2E;--muted:#4B5563;--bg:#F7F7F4;--line:#E5E7EB;--fail:#B42318;--pass:#047857;--nav-h:64px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 16px)}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:18px;line-height:1.6}
+h1,h2,h3{font-family:'Space Grotesk',Inter,sans-serif;line-height:1.1;margin:0}
+a{color:#1D4ED8}
+:focus-visible{outline:3px solid #141A2E;outline-offset:3px;border-radius:4px}
+.skip{position:absolute;left:12px;top:-60px;background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;z-index:100;text-decoration:none}
+.skip:focus{top:12px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* Progress + nav */
+.progress{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,#1D4ED8,#6D28D9,#047857);z-index:60}
+.topnav{position:sticky;top:0;z-index:50;background:rgba(247,247,244,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topnav .wrap{display:flex;align-items:center;gap:20px;min-height:var(--nav-h);flex-wrap:wrap;padding-top:6px;padding-bottom:6px}
+.brand{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;text-decoration:none;color:var(--ink);margin-right:auto}
+.topnav ul{list-style:none;display:flex;flex-wrap:wrap;gap:4px;margin:0;padding:0}
+.topnav ul a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border-radius:999px;text-decoration:none;color:var(--ink);font-weight:600;font-size:16px}
+.topnav ul a:hover{background:#ECECE6}
+.topnav ul a[aria-current="true"]{background:var(--ink);color:#fff}
+
+/* Hero */
+.hero{background:#141A2E;color:#F5F6FA;padding:96px 0 104px}
+.eyebrow{font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:14px;color:#A5B4FC;margin:0 0 20px}
+.hero h1{font-size:clamp(48px,9vw,112px);font-weight:700}
+.hero .lede{font-size:clamp(20px,2.4vw,26px);max-width:760px;color:#D1D5E0;margin:24px 0 36px}
+.badges{display:flex;gap:14px;flex-wrap:wrap}
+.badges span{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;color:#fff}
+.cta{display:inline-flex;align-items:center;gap:10px;margin-top:40px;background:#fff;color:#141A2E;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:999px;min-height:48px}
+
+/* Intro blocks */
+.block{padding:88px 0}
+.block h2{font-size:clamp(34px,4.6vw,52px);margin-bottom:16px}
+.block .sub{color:var(--muted);max-width:720px;margin:0 0 40px;font-size:20px}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px}
+.card h3{font-size:24px;margin:14px 0 8px}
+.card p{margin:0;color:#374151}
+.pour-letter{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:44px;line-height:1}
+.lv-card{border-radius:24px;padding:32px;border:0}
+.lv-card .b{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px}
+.lv-card.target{outline:4px solid #6D28D9;outline-offset:-4px}
+.note{margin-top:24px;color:var(--muted)}
+
+
+/* POUR to human abilities map */
+.pm-title{font-size:26px;margin:8px 0 20px}
+.pour-map{position:relative}
+.pm-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;position:relative;z-index:1}
+.pm-node{border-top:6px solid var(--c)}
+.pm-gap{height:130px}
+.pm-sense{background:#141A2E;color:#F5F6FA;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:6px}
+.pm-sense svg{width:44px;height:44px;fill:none;stroke:#F5F6FA;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pm-sense h3{font-size:24px;margin:6px 0 0}
+.pm-sense p{margin:0;color:#C7CBD8;font-size:16px}
+.maps{margin-top:12px!important;font-size:15px;color:#1F2937!important}
+.pm-arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+.pm-arrows path.line{fill:none;stroke-width:3.5;stroke-linecap:round}
+.pm-wide .maps{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion: no-preference){.pm-arrows path.line{transition:stroke-dashoffset 1.4s ease}}
+@media (max-width:760px){.pm-row{grid-template-columns:repeat(2,minmax(0,1fr))}.pm-gap{height:24px}}
+@media (max-width:460px){.pm-row{grid-template-columns:1fr}}
+
+/* Level sections */
+.level{background:var(--tint);padding:88px 0}
+.level>*{max-width:1120px;margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px}
+.level-head{display:flex;gap:24px;align-items:center;margin-bottom:28px}
+.badge{flex-shrink:0;width:96px;height:96px;border-radius:50%;background:var(--col);color:#fff;display:grid;place-items:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px}
+.level-head h2{font-size:clamp(32px,4.4vw,52px);color:var(--dark)}
+.level-head p{margin:10px 0 0;font-size:19px;max-width:760px;color:#1F2937}
+.mini-toc ul{list-style:none;padding:0;margin:0 0 40px;display:flex;flex-wrap:wrap;gap:8px}
+.mini-toc a{display:inline-flex;gap:8px;align-items:center;min-height:44px;padding:6px 14px;background:#fff;border:1px solid var(--line);border-radius:999px;text-decoration:none;color:var(--ink);font-size:15px;font-weight:500}
+.mini-toc a span{font-weight:700;color:var(--dark)}
+.crit{background:#fff;border-radius:24px;padding:36px;margin-bottom:28px;border:1px solid var(--line)}
+.crit-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.num{color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;padding:4px 12px;border-radius:8px;font-size:16px}
+.lvl{font-weight:700;font-size:16px}
+.new{font-size:14px;font-weight:700;border:1.5px solid currentColor;border-radius:999px;padding:2px 10px;color:#374151}
+.crit h3{font-size:clamp(28px,3.4vw,40px);margin:14px 0 8px}
+.meaning{font-size:20px;color:#374151;margin:0 0 28px;max-width:780px}
+.examples{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:820px){.examples{grid-template-columns:1fr}.crit{padding:24px}}
+.ex{margin:0;border-radius:18px;padding:20px;border:2px solid}
+.ex.fail{border-color:#F3C4BF;background:#FFFBFA}
+.ex.pass{border-color:#A7F3D0;background:#F8FFFB}
+.verdict{margin:0 0 12px;font-weight:700;font-size:18px}
+.fail .verdict{color:var(--fail)}
+.pass .verdict{color:var(--pass)}
+.mock-wrap{width:100%;overflow:hidden;border-radius:12px}
+.mock{width:752px;zoom:.6;color:#141A2E;font-family:Inter,sans-serif}
+.mock *{box-sizing:border-box}
+.mock p,.mock h3{margin:0}
+.ex figcaption{margin-top:14px;font-size:16px;line-height:1.5;color:#374151}
+details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}
+summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+details p{margin:6px 0 0;color:#374151;max-width:820px}
+
+/* Swipe quiz */
+.quiz{background:#141A2E;color:#F5F6FA;padding:96px 0}
+.quiz h2{font-size:clamp(36px,5vw,56px)}
+.quiz .sub{color:#C7CBD8}
+.keys{display:inline-block;border:1.5px solid #8B93B0;border-radius:6px;padding:0 6px;font-size:15px;font-family:monospace}
+.swipe{max-width:560px;margin:0 auto}
+.deck-area{position:relative;min-height:440px}
+.card-behind{position:absolute;inset:14px 18px -10px;background:#2A3254;border-radius:24px;transform:rotate(-3deg)}
+.card-behind.two{inset:8px 10px -4px;background:#3A4370;transform:rotate(2deg)}
+.sw-card{position:relative;background:#fff;color:#141A2E;border-radius:24px;padding:14px;box-shadow:0 18px 40px rgba(0,0,0,.35);touch-action:pan-y;user-select:none;cursor:grab;border:4px solid transparent;transition:border-color .15s}
+.sw-card.dragging{cursor:grabbing;transition:none}
+.sw-card .mock-wrap{border-radius:14px;pointer-events:none}
+.sw-card .flash-box p{display:none}
+.sw-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 6px 4px}
+.sw-foot p{margin:0;font-weight:700;font-size:18px}
+.sw-foot span{color:#4B5563;font-size:15px;font-weight:600}
+.stamp{position:absolute;top:28px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:34px;letter-spacing:.06em;padding:4px 14px;border:5px solid;border-radius:10px;opacity:0;pointer-events:none;background:rgba(255,255,255,.92)}
+.stamp.fail{right:26px;color:#B42318;transform:rotate(12deg)}
+.stamp.pass{left:26px;color:#047857;transform:rotate(-12deg)}
+.sw-card.fly{transition:transform .35s ease-in,opacity .35s ease-in}
+@media (prefers-reduced-motion: reduce){.sw-card.fly{transition:none}.card-behind{transform:none}}
+.swipe-btns{display:flex;justify-content:space-between;gap:16px;margin-top:28px}
+.swipe-btns .btn{flex:1;min-height:56px;font-size:18px}
+.sw-fail{background:#FEE4E2!important;color:#7A1A12!important}
+.sw-pass{background:#D1FAE5!important;color:#064E3B!important}
+.sw-reveal{margin-top:24px;background:#fff;color:#141A2E;border-radius:20px;padding:24px 26px}
+.sw-reveal .res{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;margin:0 0 6px}
+.sw-reveal .res.ok{color:#047857}
+.sw-reveal .res.no{color:#B42318}
+.sw-reveal .crit-name{font-size:20px;margin:0 0 6px}
+.sw-reveal .crit-name strong{font-family:'Space Grotesk',sans-serif}
+.sw-reveal p{margin:0 0 10px;color:#374151}
+.sw-reveal .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.sw-reveal .btn{background:#141A2E;color:#fff}
+.score{background:#fff;color:#141A2E;border-radius:16px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:28px auto 0;max-width:560px}
+.score p{margin:0;font-weight:600}
+.result{margin:24px auto 0;max-width:560px;background:#fff;color:#141A2E;border-radius:20px;padding:28px}
+.result h3{font-size:30px;margin-bottom:8px}
+.result ol{padding-left:22px;margin:12px 0 0}
+.result li{margin-bottom:6px}
+.result .ok{color:#047857;font-weight:700}
+.result .no{color:#B42318;font-weight:700}
+.btn{font:inherit;font-weight:700;min-height:48px;padding:0 24px;border-radius:999px;border:0;background:#fff;color:#141A2E;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+footer{padding:40px 0;color:var(--muted);font-size:15px}
+.credit{margin:16px 0 0;font-weight:600;color:var(--ink)}
+
+/* Illustration animations */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes sway{0%,100%{transform:rotate(-35deg)}50%{transform:rotate(35deg)}}
+@keyframes cursor{0%,100%{transform:translate(-110px,0)}50%{transform:translate(110px,0)}}
+@keyframes steps{0%,20%{transform:rotate(0)}25%,45%{transform:rotate(-45deg)}50%,70%{transform:rotate(0)}75%,95%{transform:scale(1.18)}100%{transform:none}}
+@keyframes press{0%,6%{background:#A7F3D0;transform:scale(.9)}14%,100%{background:#FFFFFF;transform:none}}
+@keyframes playhead{from{left:0}to{left:calc(100% - 6px)}}
+@keyframes swoop{0%{transform:translate(-120px,60px) scale(.35) rotate(0)}55%{transform:translate(40px,-40px) scale(1.4) rotate(200deg)}100%{transform:none}}
+@keyframes fade{0%,25%{opacity:0}75%,100%{opacity:1}}
+@keyframes drain{from{flex-grow:6}to{flex-grow:0}}
+@keyframes grow{from{flex-grow:.1}to{flex-grow:3}}
+.anim-spin{animation:spin 5s linear infinite}
+.anim-spin-once{animation:spin 5s ease-out 1}
+.anim-sway{animation:sway 3s ease-in-out infinite}
+.anim-cursor{position:absolute;left:calc(50% - 18px);top:150px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);border:3px solid #141A2E;animation:cursor 3s ease-in-out infinite;pointer-events:none}
+.anim-steps{animation:steps 3s ease-in-out infinite}
+.anim-press{animation:press 3s linear infinite}
+.anim-playhead{position:absolute;top:0;bottom:0;width:6px;background:#F59E0B;box-shadow:0 0 0 2px #141A2E;animation:playhead 4s linear infinite}
+.anim-swoop{animation:swoop 2.4s ease-in-out infinite alternate}
+.anim-fade{animation:fade 2.4s ease-in-out infinite alternate}
+.anim-drain{animation:drain 9s linear infinite}
+.anim-grow{animation:grow 10s linear infinite}
+.flash-warn{background:#FFF7E6;border:2px solid #B45309;border-radius:12px;padding:12px 16px;margin:0 0 20px;color:#7C2D12;max-width:780px}
+.flash-btn{font:inherit;font-weight:700;font-size:17px;margin-top:14px;min-height:52px;width:100%;padding:0 20px;border-radius:999px;border:0;background:#141A2E;color:#fff;cursor:pointer}
+.flash-btn:hover{background:#2A3254}
+.flash-btn:disabled{opacity:.55;cursor:wait}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Only animate what's on screen, and honour the pause button */
+.js .mock-wrap:not(.play) [class*="anim-"],
+.anim-paused [class*="anim-"]{animation-play-state:paused}
+.motion-toggle{font:inherit;font-weight:600;font-size:15px;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer}
+.motion-toggle[data-paused="true"]{background:var(--ink);color:#fff}
+@media (prefers-reduced-motion: reduce){
+  [class*="anim-"]{animation:none!important}
+  .anim-cursor,.anim-playhead{display:none}
+  .motion-toggle{display:none}
+}
+
+
+/* Responsiveness section */
+.resp{background:#fff;border-top:1px solid var(--line)}
+.eyebrow-dark{font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:14px;color:#6D28D9;margin:0 0 14px}
+.resp-h3{font-size:30px;margin:72px 0 20px}
+.rw-demo{background:#F3F4F6;border-radius:24px;padding:24px;margin-top:8px}
+.rw-controls{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:end;margin-bottom:18px}
+.rw-presets{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
+.rw-presets legend{font-weight:700;margin-bottom:8px;padding:0}
+.rw-presets label{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;background:#fff;border:2px solid var(--line);border-radius:999px;cursor:pointer;font-weight:600}
+.rw-presets label:has(input:checked){border-color:var(--ink)}
+.rw-presets input{width:18px;height:18px;accent-color:#141A2E}
+.rw-slider{display:flex;flex-direction:column;gap:6px;flex:1;min-width:220px}
+.rw-slider label{font-weight:700}
+.rw-slider input{width:100%;min-height:44px;accent-color:#141A2E}
+.rw-stage{width:100%;overflow:hidden;display:flex;justify-content:center}
+.rw-frame{background:#fff;border:10px solid #141A2E;border-radius:22px;overflow:hidden;transition:width .35s ease;flex-shrink:0}
+@media (prefers-reduced-motion: reduce){.rw-frame{transition:none}}
+.rw-page{container-type:inline-size;font-family:Inter,sans-serif;color:#141A2E}
+.rw-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--line)}
+.rw-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px}
+.rw-nav{display:flex;gap:22px;font-weight:600;font-size:16px}
+.rw-menu{display:none;font-weight:700;border:2px solid #141A2E;border-radius:10px;padding:6px 12px;font-size:15px}
+.rw-hero{display:grid;grid-template-columns:1.4fr 1fr;gap:24px;padding:22px;align-items:center}
+.rw-scene{position:relative;aspect-ratio:16/9;border-radius:14px;background:#1F2937;display:grid;place-items:center;overflow:hidden}
+.rw-orb{width:34%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F4C38B 0%,#C9733A 45%,#5B3A29 100%)}
+.rw-scene-tag{position:absolute;left:10px;bottom:8px;font-size:13px;color:#D1D5DB}
+.rw-scene-tag::after{content:"Camera: wide framing"}
+.rw-copy{display:flex;flex-direction:column;gap:8px}
+.rw-copy b{font-family:'Space Grotesk',sans-serif;font-size:30px;line-height:1.1}
+.rw-copy span{color:#4B5563}
+.rw-copy .rw-cta{align-self:start;background:#141A2E;color:#fff;border-radius:999px;padding:10px 18px;font-weight:700;margin-top:6px}
+.rw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:0 22px 22px}
+.rw-grid div{display:flex;flex-direction:column;gap:8px}
+.rw-grid i{display:block;aspect-ratio:4/3;border-radius:12px;background:#E9B98A}
+.rw-grid div:nth-child(2) i{background:#5B6B8C}
+.rw-grid div:nth-child(3) i{background:#8A9A5B}
+@container (max-width:900px){.rw-grid{grid-template-columns:repeat(2,1fr)}.rw-hero{grid-template-columns:1fr 1fr}}
+@container (max-width:620px){
+  .rw-nav{display:none}.rw-menu{display:inline-block}
+  .rw-hero{grid-template-columns:1fr}
+  .rw-scene{aspect-ratio:4/5}.rw-orb{width:62%}
+  .rw-scene-tag::after{content:"Camera: pulled back for portrait"}
+  .rw-grid{grid-template-columns:1fr}
+  .rw-copy b{font-size:26px}
+}
+.rw-status{margin:14px 0 0;font-weight:600;text-align:center}
+.resp-3d ol{margin:0;padding-left:24px;max-width:860px}
+.resp-3d li{margin-bottom:12px}
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.checks li{background:#F3F4F6;border-radius:14px;padding:16px 18px 16px 50px;position:relative}
+.checks li::before{content:"";position:absolute;left:18px;top:19px;width:18px;height:18px;border:2.5px solid #047857;border-radius:5px}
+
+/* Reveal */
+@media (prefers-reduced-motion: no-preference){
+  .js .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+  .js .reveal.in{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="progress" aria-hidden="true"></div>
+<header class="topnav">
+<div class="wrap">
+<a class="brand" href="#top">WCAG 2.2 in practice</a>
+<nav aria-label="Sections"><ul>
+<li><a href="#basics">Basics</a></li>
+<li><a href="#level-a">A</a></li>
+<li><a href="#level-aa">AA</a></li>
+<li><a href="#level-aaa">AAA</a></li>
+<li><a href="#new-in-22">New in 2.2</a></li>
+<li><a href="#quiz">Quiz</a></li>
+<li><a href="#responsive">Responsive</a></li>
+</ul></nav>
+<button type="button" class="motion-toggle" data-paused="false" id="motion-toggle">Pause animations</button>
+</div>
+</header>
+
+<main id="main">
+<section class="hero" id="top">
+<div class="wrap">
+<h1>WCAG 2.2 in practice</h1>
+<p class="lede">The accessibility standard, criterion by criterion, with real examples that fail and pass. Scroll through, then test yourself with the quiz at the end.</p>
+<div class="badges" aria-hidden="true"><span style="background:#3B63E0">A</span><span style="background:#7C3AED">AA</span><span style="background:#047857">AAA</span></div>
+<a class="cta" href="#basics">Start <span aria-hidden="true">↓</span></a>
+</div>
+</section>
+
+<section class="block" id="basics" aria-labelledby="basics-h">
+<div class="wrap">
+<h2 id="basics-h" class="reveal">What is WCAG 2.2?</h2>
+<p class="sub reveal">The Web Content Accessibility Guidelines are the W3C's international standard for accessible websites and apps. Version 2.2 became a W3C Recommendation in October 2023. Everything sits under four principles.</p>
+<h3 class="pm-title reveal">Who each principle helps most</h3>
+<div class="pour-map" id="pour-map">
+<div class="pm-row">
+<div class="card pm-node" data-node="P" style="--c:#1D4ED8"><div class="pour-letter" style="color:#1D4ED8">P</div><h3>Perceivable</h3><p>People can perceive the content: text alternatives, captions, enough contrast.</p><p class="maps">Helps most: <strong>Eye</strong> and <strong>Ear</strong></p></div>
+<div class="card pm-node" data-node="O" style="--c:#6D28D9"><div class="pour-letter" style="color:#6D28D9">O</div><h3>Operable</h3><p>People can use it: keyboard, no time pressure, nothing that triggers seizures.</p><p class="maps">Helps most: <strong>Motor</strong></p></div>
+<div class="card pm-node" data-node="U" style="--c:#047857"><div class="pour-letter" style="color:#047857">U</div><h3>Understandable</h3><p>Content and behaviour are readable and predictable, with clear errors.</p><p class="maps">Helps most: <strong>Cognition</strong></p></div>
+<div class="card pm-node" data-node="R" style="--c:#C2410C"><div class="pour-letter" style="color:#C2410C">R</div><h3>Robust</h3><p>It works reliably with browsers and assistive technology like screen readers.</p><p class="maps">Helps most: <strong>Motor</strong> and <strong>Cognition</strong></p></div>
+</div>
+<div class="pm-gap" aria-hidden="true"></div>
+<div class="pm-row">
+<div class="pm-sense" data-node="eye"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><h3>Eye</h3><p>Vision: blind, low-vision and colour-blind people.</p></div>
+<div class="pm-sense" data-node="ear"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8.5a6 6 0 1 1 12 0c0 3.5-3 4.5-3 7.5a3.5 3.5 0 0 1-6.5 1.8"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-1.5 2-1.5 3.5"/></svg><h3>Ear</h3><p>Hearing: Deaf and hard-of-hearing people.</p></div>
+<div class="pm-sense" data-node="motor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.4l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/></svg><h3>Motor</h3><p>Movement: tremors, limited dexterity, keyboard, switch and voice users.</p></div>
+<div class="pm-sense" data-node="cog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.9.6 2.5 2.5 0 0 1-2.9-3.4 3 3 0 0 1-.6-5.1 2.5 2.5 0 0 1 1.9-4.2A2.5 2.5 0 0 1 9.5 2z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.9.6 2.5 2.5 0 0 0 2.9-3.4 3 3 0 0 0 .6-5.1 2.5 2.5 0 0 0-1.9-4.2A2.5 2.5 0 0 0 14.5 2z"/></svg><h3>Cognition</h3><p>Thinking: memory, attention, learning and reading differences.</p></div>
+</div>
+<svg class="pm-arrows" aria-hidden="true"></svg>
+</div>
+<p class="note reveal">Every principle helps everyone in some way. The arrows show who each one helps most.</p>
+
+<h2 class="reveal" style="margin-top:88px">Three levels, each building on the last</h2>
+<p class="sub reveal">Every success criterion has a conformance level. AA means every A criterion plus every AA criterion; AAA includes all three.</p>
+<div class="grid3">
+<div class="card lv-card reveal" style="background:#EEF2FF"><div class="b" style="background:#1D4ED8" aria-hidden="true">A</div><h3 style="color:#1E3A8A">The essentials</h3><p>The minimum. If these fail, some people cannot use the site at all.</p></div>
+<div class="card lv-card target reveal" style="background:#F3EEFF"><div class="b" style="background:#6D28D9" aria-hidden="true">AA</div><h3 style="color:#4C1D95">The standard target</h3><p>What most laws, clients and organisations require. <strong>Aim for this level in your beta.</strong></p></div>
+<div class="card lv-card reveal" style="background:#ECFDF5"><div class="b" style="background:#047857" aria-hidden="true">AAA</div><h3 style="color:#064E3B">The highest bar</h3><p>Stricter, and not always possible across a whole site. Apply it where it matters most.</p></div>
+</div>
+<p class="note reveal">Each criterion below shows a version that <strong style="color:var(--fail)">fails</strong> and one that <strong style="color:var(--pass)">passes</strong>. Open “How to test” for details.</p>
+</div>
+</section>
+
+<section class="level" id="level-a" style="--tint:#EEF2FF;--col:#1D4ED8;--dark:#1E3A8A" aria-labelledby="level-a-h">
+<div class="level-head reveal">
+<div class="badge" aria-hidden="true">A</div>
+<div><h2 id="level-a-h">Level A: the essentials</h2><p>The minimum. If these fail, some people cannot use the site at all.</p></div>
+</div>
+<nav class="mini-toc" aria-label="Level A: the essentials criteria"><ul><li><a href="#c-1-1-1"><span>1.1.1</span> Non-text content</a></li><li><a href="#c-1-2-2"><span>1.2.2</span> Captions (prerecorded)</a></li><li><a href="#c-1-3-1"><span>1.3.1</span> Info and relationships</a></li><li><a href="#c-1-4-1"><span>1.4.1</span> Use of colour</a></li><li><a href="#c-2-1-1"><span>2.1.1</span> Keyboard</a></li><li><a href="#c-2-2-2"><span>2.2.2</span> Pause, stop, hide</a></li><li><a href="#c-2-3-1"><span>2.3.1</span> Three flashes or below</a></li><li><a href="#c-2-4-2"><span>2.4.2</span> Page titled</a></li></ul></nav>
+<article class="crit reveal" id="c-1-1-1">
+<div class="crit-head"><span class="num" style="background:#1D4ED8">1.1.1</span><span class="lvl" style="color:#1E3A8A">Level A</span></div>
+<h3>Non-text content</h3>
+<p class="meaning">Images, icons and visuals have a text alternative that says what they show.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="height:200px;border-radius:12px;background:radial-gradient(circle at 50% 45%, #F4C38B 0%, #C9733A 28%, #2B2D42 62%)"></div>
+<div style="display:flex;align-items:center;gap:16px;background:#141A2E;border-radius:12px;padding:16px 20px"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#FFFFFF;width:36px;height:36px;flex-shrink:0" viewbox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><p style="font-size:26px;color:#FFFFFF">Screen reader: “Image, hero-final-v3.png”</p></div>
+</div></div></div>
+
+<figcaption>No alt text, so the screen reader reads out the file name.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="height:200px;border-radius:12px;background:radial-gradient(circle at 50% 45%, #F4C38B 0%, #C9733A 28%, #2B2D42 62%)"></div>
+<div style="display:flex;align-items:center;gap:16px;background:#141A2E;border-radius:12px;padding:16px 20px"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#FFFFFF;width:36px;height:36px;flex-shrink:0" viewbox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><p style="font-size:26px;color:#FFFFFF">Screen reader: “3D render of a ceramic lamp, slowly rotating”</p></div>
+</div></div></div>
+
+<figcaption>A short description of what the visual shows. Decorative shapes get empty alt text.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>For a 3D canvas, give it role=&quot;img&quot; and an aria-label, or put a text description next to it. Purely decorative visuals should be hidden from assistive technology. Test: turn on VoiceOver or NVDA and listen.</p></details>
+</article><article class="crit reveal" id="c-1-2-2">
+<div class="crit-head"><span class="num" style="background:#1D4ED8">1.2.2</span><span class="lvl" style="color:#1E3A8A">Level A</span></div>
+<h3>Captions (prerecorded)</h3>
+<p class="meaning">Recorded video with sound has synchronised captions.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:16px;background:#111827;border-radius:16px;padding:24px;height:400px;width:100%;box-sizing:border-box">
+<div style="flex:1;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#FFFFFF;width:88px;height:88px;flex-shrink:0" viewbox="0 0 24 24"><polygon fill="currentColor" points="6 4 20 12 6 20 6 4"></polygon></svg></div>
+<div style="display:flex;height:8px"><div class="anim-grow" style="flex:2;background:#FFFFFF"></div><div style="flex:3;background:#4B5563"></div></div>
+</div></div></div>
+
+<figcaption>A narrated showreel with no captions: deaf viewers miss everything.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:16px;background:#111827;border-radius:16px;padding:24px;height:400px;width:100%;box-sizing:border-box">
+<div style="flex:1;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#FFFFFF;width:88px;height:88px;flex-shrink:0" viewbox="0 0 24 24"><polygon fill="currentColor" points="6 4 20 12 6 20 6 4"></polygon></svg></div>
+<p style="font-size:26px;line-height:1.35;color:#FFFFFF;background:rgba(0,0,0,0.8);padding:8px 16px;border-radius:8px;text-align:center">“We started with clay, then scanned it into 3D.”</p>
+<div style="display:flex;height:8px"><div class="anim-grow" style="flex:2;background:#FFFFFF"></div><div style="flex:3;background:#4B5563"></div></div>
+</div></div></div>
+
+<figcaption>Accurate captions, synced to the speech and checked by a person.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Auto-generated captions are a starting point, not a pass. Edit them for accuracy, speaker names and meaningful sounds. Silent background loops don&#x27;t need captions.</p></details>
+</article><article class="crit reveal" id="c-1-3-1">
+<div class="crit-head"><span class="num" style="background:#1D4ED8">1.3.1</span><span class="lvl" style="color:#1E3A8A">Level A</span></div>
+<h3>Info and relationships</h3>
+<p class="meaning">Structure lives in the code, not only in how it looks.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:16px"><p style="font-family:monospace;font-size:24px;color:#B42318;background:#FEE4E2;padding:2px 10px;border-radius:6px">&lt;div&gt;</p><p style="font-size:40px;font-weight:700">Projects</p></div>
+<div style="width:600px;height:14px;background:#D1D5DB;border-radius:7px"></div>
+<div style="width:480px;height:14px;background:#D1D5DB;border-radius:7px"></div>
+<div style="display:flex;align-items:center;gap:16px"><p style="font-family:monospace;font-size:24px;color:#B42318;background:#FEE4E2;padding:2px 10px;border-radius:6px">&lt;div&gt;</p><p style="font-size:32px;font-weight:700">Ceramics</p></div>
+<div style="width:560px;height:14px;background:#D1D5DB;border-radius:7px"></div>
+<p style="font-size:24px;color:#B42318;font-weight:600">Headings a screen reader finds: 0</p>
+</div></div></div>
+
+<figcaption>Big bold text that only looks like a heading, so it can&#x27;t be used to navigate.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:16px"><p style="font-family:monospace;font-size:24px;color:#065F46;background:#D1FAE5;padding:2px 10px;border-radius:6px">&lt;h1&gt;</p><p style="font-size:40px;font-weight:700">Projects</p></div>
+<div style="width:600px;height:14px;background:#D1D5DB;border-radius:7px"></div>
+<div style="width:480px;height:14px;background:#D1D5DB;border-radius:7px"></div>
+<div style="display:flex;align-items:center;gap:16px"><p style="font-family:monospace;font-size:24px;color:#065F46;background:#D1FAE5;padding:2px 10px;border-radius:6px">&lt;h2&gt;</p><p style="font-size:32px;font-weight:700">Ceramics</p></div>
+<div style="width:560px;height:14px;background:#D1D5DB;border-radius:7px"></div>
+<p style="font-size:24px;color:#047857;font-weight:600">Headings a screen reader finds: 2</p>
+</div></div></div>
+
+<figcaption>Real heading elements, so screen-reader users can jump between sections.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>The same applies to lists, tables and form labels: use the real element so the relationship is in the code. Test: a headings-outline browser extension, or a screen reader&#x27;s headings list.</p></details>
+</article><article class="crit reveal" id="c-1-4-1">
+<div class="crit-head"><span class="num" style="background:#1D4ED8">1.4.1</span><span class="lvl" style="color:#1E3A8A">Level A</span></div>
+<h3>Use of colour</h3>
+<p class="meaning">Colour is never the only way information is shown.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:26px;font-weight:700">Email</p>
+<div style="background:#FFFFFF;border:3px solid #D92D20;border-radius:10px;padding:14px 20px"><p style="font-size:26px;color:#111827">name@site</p></div>
+<div style="height:44px"></div>
+<div style="display:flex"><p style="font-size:26px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:12px 32px;border-radius:10px">Send</p></div>
+</div></div></div>
+
+<figcaption>Only a red border marks the error, which colour-blind users can easily miss.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:26px;font-weight:700">Email</p>
+<div style="background:#FFFFFF;border:3px solid #D92D20;border-radius:10px;padding:14px 20px"><p style="font-size:26px;color:#111827">name@site</p></div>
+<div style="display:flex;align-items:center;gap:12px"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#B42318;width:32px;height:32px;flex-shrink:0" viewbox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><line x1="12" x2="12" y1="9" y2="13"></line><line x1="12" x2="12.01" y1="17" y2="17"></line></svg><p style="font-size:24px;font-weight:600;color:#B42318">Enter a full email, like name@site.com</p></div>
+<div style="display:flex"><p style="font-size:26px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:12px 32px;border-radius:10px">Send</p></div>
+</div></div></div>
+
+<figcaption>An icon and a message explain the error, so colour is a bonus, not the only signal.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Also applies to links (underline them, not just a colour change), charts (labels or patterns, not only coloured lines) and status dots. Test: view the page in greyscale.</p></details>
+</article><article class="crit reveal" id="c-2-1-1">
+<div class="crit-head"><span class="num" style="background:#1D4ED8">2.1.1</span><span class="lvl" style="color:#1E3A8A">Level A</span></div>
+<h3>Keyboard</h3>
+<p class="meaning">Everything works with a keyboard alone, no mouse needed.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:36px;background:#FFFFFF;border-radius:12px;padding:16px 24px"><p style="font-size:26px;font-weight:600">Work ▾</p><p style="font-size:26px;font-weight:600">About</p><p style="font-size:26px;font-weight:600">Contact</p></div>
+<div style="flex:1"></div>
+<div style="display:flex;align-items:center;gap:16px"><p style="font-family:monospace;font-size:24px;font-weight:700;background:#FFFFFF;border:2px solid #9CA3AF;border-radius:8px;padding:4px 14px">Tab</p><p style="font-size:24px;color:#B42318;font-weight:600">focus skips past the menu</p></div>
+</div></div></div>
+
+<figcaption>The submenu only opens on mouse hover, so keyboard users never reach it.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:28px;background:#FFFFFF;border-radius:12px;padding:12px 20px"><div style="border:4px solid #1D4ED8;border-radius:8px;padding:2px 10px"><p style="font-size:26px;font-weight:600">Work ▾</p></div><p style="font-size:26px;font-weight:600">About</p><p style="font-size:26px;font-weight:600">Contact</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FFFFFF;border-radius:12px;padding:14px 24px;width:320px"><p style="font-size:24px">Ceramics</p><p style="font-size:24px">Motion</p><p style="font-size:24px">3D experiments</p></div>
+<div style="display:flex;align-items:center;gap:12px"><p style="font-family:monospace;font-size:24px;font-weight:700;background:#FFFFFF;border:2px solid #9CA3AF;border-radius:8px;padding:4px 14px">Tab</p><p style="font-family:monospace;font-size:24px;font-weight:700;background:#FFFFFF;border:2px solid #9CA3AF;border-radius:8px;padding:4px 14px">Enter</p><p style="font-size:24px;color:#047857;font-weight:600">opens the menu</p></div>
+</div></div></div>
+
+<figcaption>Tab reaches the menu and Enter opens it. Esc closes it again.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>The quickest test there is: put the mouse away and try to use the whole site with Tab, Shift+Tab, Enter, Space, Esc and the arrow keys. Also check there&#x27;s no keyboard trap (2.1.2), for example inside a 3D canvas.</p></details>
+</article><article class="crit reveal" id="c-2-2-2">
+<div class="crit-head"><span class="num" style="background:#1D4ED8">2.2.2</span><span class="lvl" style="color:#1E3A8A">Level A</span></div>
+<h3>Pause, stop, hide</h3>
+<p class="meaning">Anything that moves for more than 5 seconds can be paused, stopped or hidden.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#1F2937;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div class="anim-spin" style="width:200px;height:200px;border-radius:100px;background:radial-gradient(circle at 40% 35%, #F4C38B 0%, #C9733A 45%, #5B3A29 100%)"></div>
+<p style="font-size:26px;color:#E5E7EB">↻ Auto-rotates forever</p>
+</div></div></div>
+
+<figcaption>Endless motion with no controls distracts people with attention or vestibular conditions.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#1F2937;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div class="anim-spin-once" style="width:200px;height:200px;border-radius:100px;background:radial-gradient(circle at 40% 35%, #F4C38B 0%, #C9733A 45%, #5B3A29 100%)"></div>
+<p style="font-size:26px;font-weight:700;color:#141A2E;background:#FFFFFF;padding:10px 28px;border-radius:999px">❚❚  Pause rotation</p>
+</div></div></div>
+
+<figcaption>A visible, keyboard-reachable pause button. Even better: stop after a few seconds.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Applies to carousels, auto-rotating models, marquee text, background video and looping animations that run alongside other content. Respecting prefers-reduced-motion helps too, but a visible control is what this criterion requires.</p></details>
+</article><article class="crit reveal" id="c-2-3-1">
+<div class="crit-head"><span class="num" style="background:#1D4ED8">2.3.1</span><span class="lvl" style="color:#1E3A8A">Level A</span></div>
+<h3>Three flashes or below</h3>
+<p class="meaning">Nothing flashes more than three times in any one second.</p>
+<p class="flash-warn" role="note"><strong>Flashing warning:</strong> the failing example below flashes rapidly, but only after you press its button, and only for 2 seconds. If you are sensitive to flashing light, skip it.</p>
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box;gap:14px">
+<p style="font-size:24px;color:#374151">One second of a “glitch” transition:</p>
+<div class="flash-box" data-off="#111827" data-on="#FFFFFF" style="width:100%;height:110px;border:2px solid #111827;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#111827"><p style="font-size:22px;color:#D1D5DB">▼ Press Play below to see it flash</p></div><div style="display:flex;height:80px;border:2px solid #111827;border-radius:8px;overflow:hidden"><div style="flex:1;background:#111827"></div><div style="flex:1;background:#FFFFFF"></div><div style="flex:1;background:#111827"></div><div style="flex:1;background:#FFFFFF"></div><div style="flex:1;background:#111827"></div><div style="flex:1;background:#FFFFFF"></div><div style="flex:1;background:#111827"></div><div style="flex:1;background:#FFFFFF"></div><div style="flex:1;background:#111827"></div><div style="flex:1;background:#FFFFFF"></div></div>
+<p style="font-size:30px;font-weight:700;color:#B42318">5 flashes per second</p>
+</div></div></div>
+<button type="button" class="flash-btn" data-hz="5" data-ms="2000"><span aria-hidden="true">▶</span> Play the flash at real speed (2 seconds) <span class="sr">(5 black-and-white flashes per second)</span></button>
+<figcaption>Rapid black-white strobing can trigger seizures in people with photosensitive epilepsy.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box;gap:14px">
+<p style="font-size:24px;color:#374151">One second of the softened transition:</p>
+<div class="flash-box" data-off="#4B5563" data-on="#9CA3AF" style="width:100%;height:110px;border:2px solid #111827;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#4B5563"><p style="font-size:22px;color:#D1D5DB">▼ Press Play below to see it flash</p></div><div style="display:flex;height:80px;border:2px solid #111827;border-radius:8px;overflow:hidden"><div style="flex:1;background:#4B5563"></div><div style="flex:1;background:#4B5563"></div><div style="flex:1;background:#4B5563"></div><div style="flex:1;background:#6B7280"></div><div style="flex:1;background:#9CA3AF"></div><div style="flex:1;background:#6B7280"></div><div style="flex:1;background:#4B5563"></div><div style="flex:1;background:#4B5563"></div><div style="flex:1;background:#4B5563"></div><div style="flex:1;background:#4B5563"></div></div>
+<p style="font-size:30px;font-weight:700;color:#047857">1 soft flash per second</p>
+</div></div></div>
+<button type="button" class="flash-btn" data-hz="1" data-ms="2000"><span aria-hidden="true">▶</span> Play the flash at real speed (2 seconds) <span class="sr">(1 soft flash per second)</span></button>
+<figcaption>Slower, lower-contrast changes keep the effect without the risk.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Saturated red flashes are especially risky. Small flashing areas are lower risk, but the simplest rule for students is: no more than three flashes per second, ever. Tools like PEAT can analyse video for flash risk.</p></details>
+</article><article class="crit reveal" id="c-2-4-2">
+<div class="crit-head"><span class="num" style="background:#1D4ED8">2.4.2</span><span class="lvl" style="color:#1E3A8A">Level A</span></div>
+<h3>Page titled</h3>
+<p class="meaning">Every page has a clear, unique title in the browser tab.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;gap:0px;background:#D1D5DB;border-radius:16px;padding:20px 20px 0px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<div style="display:flex;align-items:center;gap:10px;background:#FFFFFF;border-radius:12px 12px 0px 0px;padding:12px 18px"><div style="width:18px;height:18px;border-radius:9px;background:#9CA3AF"></div><p style="font-size:24px">Vite App</p></div>
+<div style="display:flex;align-items:center;gap:10px;background:#E5E7EB;border-radius:12px 12px 0px 0px;padding:12px 18px"><div style="width:18px;height:18px;border-radius:9px;background:#9CA3AF"></div><p style="font-size:24px">Untitled</p></div>
+<div style="display:flex;align-items:center;gap:10px;background:#E5E7EB;border-radius:12px 12px 0px 0px;padding:12px 18px"><div style="width:18px;height:18px;border-radius:9px;background:#9CA3AF"></div><p style="font-size:24px">index.html</p></div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FFFFFF;padding:28px"><div style="width:400px;height:20px;background:#D1D5DB;border-radius:10px"></div><div style="width:560px;height:14px;background:#E5E7EB;border-radius:7px"></div><div style="width:500px;height:14px;background:#E5E7EB;border-radius:7px"></div></div>
+</div></div></div>
+
+<figcaption>Default titles: people with many tabs, or using a screen reader, can&#x27;t tell pages apart.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;gap:0px;background:#D1D5DB;border-radius:16px;padding:20px 20px 0px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<div style="display:flex;align-items:center;gap:10px;background:#FFFFFF;border-radius:12px 12px 0px 0px;padding:12px 18px"><div style="width:18px;height:18px;border-radius:9px;background:#C9733A"></div><p style="font-size:24px">Gallery – My Portfolio</p></div>
+<div style="display:flex;align-items:center;gap:10px;background:#E5E7EB;border-radius:12px 12px 0px 0px;padding:12px 18px"><div style="width:18px;height:18px;border-radius:9px;background:#C9733A"></div><p style="font-size:24px">About – My…</p></div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FFFFFF;padding:28px"><div style="width:400px;height:20px;background:#D1D5DB;border-radius:10px"></div><div style="width:560px;height:14px;background:#E5E7EB;border-radius:7px"></div><div style="width:500px;height:14px;background:#E5E7EB;border-radius:7px"></div></div>
+</div></div></div>
+
+<figcaption>Page name first, then site name. It&#x27;s the first thing a screen reader announces.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Vite, Next and other starter templates ship with a placeholder title. Students should change it on every page or route. Single-page apps should update document.title when the view changes.</p></details>
+</article>
+</section><section class="level" id="level-aa" style="--tint:#F3EEFF;--col:#6D28D9;--dark:#4C1D95" aria-labelledby="level-aa-h">
+<div class="level-head reveal">
+<div class="badge" aria-hidden="true">AA</div>
+<div><h2 id="level-aa-h">Level AA: the standard target</h2><p>What most laws, clients and organisations require. This is the level to aim for in your beta.</p></div>
+</div>
+<nav class="mini-toc" aria-label="Level AA: the standard target criteria"><ul><li><a href="#c-1-4-3"><span>1.4.3</span> Contrast (minimum)</a></li><li><a href="#c-1-4-11"><span>1.4.11</span> Non-text contrast</a></li><li><a href="#c-1-3-4"><span>1.3.4</span> Orientation</a></li><li><a href="#c-1-4-10"><span>1.4.10</span> Reflow</a></li><li><a href="#c-1-4-13"><span>1.4.13</span> Content on hover or focus</a></li><li><a href="#c-2-4-7"><span>2.4.7</span> Focus visible</a></li><li><a href="#c-2-5-7"><span>2.5.7</span> Dragging movements</a></li><li><a href="#c-2-5-8"><span>2.5.8</span> Target size (minimum)</a></li></ul></nav>
+<article class="crit reveal" id="c-1-4-3">
+<div class="crit-head"><span class="num" style="background:#6D28D9">1.4.3</span><span class="lvl" style="color:#4C1D95">Level AA</span></div>
+<h3>Contrast (minimum)</h3>
+<p class="meaning">Text contrast of at least 4.5 : 1, or 3 : 1 for large text (24 px+, or 19 px+ bold).</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#FFFFFF;border:2px solid #E5E7EB;border-radius:16px;padding:32px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:40px;font-weight:700">Ceramics, 2026</p>
+<p style="font-size:28px;line-height:1.4;color:#B8BCC6">Hand-built lamps, scanned and rendered as interactive 3D objects.</p>
+<div style="display:flex"><p style="font-size:26px;font-weight:700;color:#B42318;background:#FEE4E2;padding:6px 16px;border-radius:999px">1.9 : 1</p></div>
+</div></div></div>
+
+<figcaption>Pale grey on white looks elegant but is hard to read, especially on phones outdoors.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#FFFFFF;border:2px solid #E5E7EB;border-radius:16px;padding:32px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:40px;font-weight:700">Ceramics, 2026</p>
+<p style="font-size:28px;line-height:1.4;color:#4B5563">Hand-built lamps, scanned and rendered as interactive 3D objects.</p>
+<div style="display:flex"><p style="font-size:26px;font-weight:700;color:#065F46;background:#D1FAE5;padding:6px 16px;border-radius:999px">7.6 : 1</p></div>
+</div></div></div>
+
+<figcaption>A darker grey keeps the soft look and passes comfortably.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Test with the WebAIM contrast checker, or the contrast readout in Chrome DevTools&#x27; colour picker. Text over images or 3D scenes needs checking against the lightest and darkest parts behind it.</p></details>
+</article><article class="crit reveal" id="c-1-4-11">
+<div class="crit-head"><span class="num" style="background:#6D28D9">1.4.11</span><span class="lvl" style="color:#4C1D95">Level AA</span></div>
+<h3>Non-text contrast</h3>
+<p class="meaning">Buttons, inputs, icons and meaningful graphics reach 3 : 1 against what&#x27;s behind them.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;align-items:center;justify-content:center;border-radius:16px;padding:28px;background:linear-gradient(90deg, #F8EBDD 0%, #E9B98A 50%, #3A2E4A 100%);height:400px;width:100%;box-sizing:border-box">
+<div style="border:2px solid rgba(255,255,255,0.55);border-radius:999px;padding:16px 40px"><p style="font-size:28px;color:rgba(255,255,255,0.85)">Explore the scene</p></div>
+</div></div></div>
+
+<figcaption>A thin white outline vanishes over the light part of the 3D background.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;align-items:center;justify-content:center;border-radius:16px;padding:28px;background:linear-gradient(90deg, #F8EBDD 0%, #E9B98A 50%, #3A2E4A 100%);height:400px;width:100%;box-sizing:border-box">
+<div style="background:#141A2E;border:3px solid #FFFFFF;border-radius:999px;padding:16px 40px"><p style="font-size:28px;font-weight:700;color:#FFFFFF">Explore the scene</p></div>
+</div></div></div>
+
+<figcaption>A solid fill plus a light edge stays visible over any part of the scene.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Covers the boundaries of controls (input borders, toggle tracks), focus indicators, icons that carry meaning, and chart lines. Decorative graphics and disabled controls are exempt.</p></details>
+</article><article class="crit reveal" id="c-1-3-4">
+<div class="crit-head"><span class="num" style="background:#6D28D9">1.3.4</span><span class="lvl" style="color:#4C1D95">Level AA</span></div>
+<h3>Orientation</h3>
+<p class="meaning">The site works in both portrait and landscape, never locked to one.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;align-items:center;justify-content:center;background:#F3F4F6;border-radius:16px;padding:20px;height:400px;width:100%;box-sizing:border-box">
+<div style="width:220px;height:340px;border:10px solid #141A2E;border-radius:36px;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px"><p style="font-size:64px;color:#141A2E">↻</p><p style="font-size:24px;line-height:1.3;text-align:center">Please rotate your device</p></div>
+</div></div></div>
+
+<figcaption>People with a phone mounted on a wheelchair or stand can&#x27;t rotate it.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;align-items:center;justify-content:center;background:#F3F4F6;border-radius:16px;padding:20px;height:400px;width:100%;box-sizing:border-box">
+<div style="width:220px;height:340px;border:10px solid #141A2E;border-radius:36px;background:#FFFFFF;display:flex;flex-direction:column;gap:12px;padding:16px"><div style="height:130px;border-radius:12px;background:radial-gradient(circle at 50% 45%, #F4C38B 0%, #C9733A 30%, #2B2D42 70%)"></div><p style="font-size:24px;font-weight:700">Lamp 01</p><div style="height:10px;background:#D1D5DB;border-radius:5px"></div><div style="width:120px;height:10px;background:#D1D5DB;border-radius:5px"></div></div>
+</div></div></div>
+
+<figcaption>The layout and camera adapt to portrait. The scene is reframed, not blocked.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>For 3D: adjust the camera&#x27;s field of view or distance based on aspect ratio, so the subject stays in frame in portrait. Only lock orientation when it&#x27;s essential, like a piano app.</p></details>
+</article><article class="crit reveal" id="c-1-4-10">
+<div class="crit-head"><span class="num" style="background:#6D28D9">1.4.10</span><span class="lvl" style="color:#4C1D95">Level AA</span></div>
+<h3>Reflow</h3>
+<p class="meaning">Content fits a 320 px wide view (400% zoom) without scrolling sideways.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#F3F4F6;border-radius:16px;padding:20px;height:400px;width:100%;box-sizing:border-box">
+<div style="width:240px;height:290px;border:10px solid #141A2E;border-radius:32px;background:#FFFFFF;overflow:hidden;display:flex;gap:12px;padding:14px"><div style="width:190px;flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="height:150px;border-radius:10px;background:#C9733A"></div><p style="font-size:24px;font-weight:700">Lamp 01</p></div><div style="width:190px;flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="height:150px;border-radius:10px;background:#5B6B8C"></div><p style="font-size:24px;font-weight:700">Lamp 02</p></div></div>
+<p style="font-size:24px;font-weight:600;color:#B42318">⟷ scroll sideways to read</p>
+</div></div></div>
+
+<figcaption>A fixed two-column layout gets cut off when zoomed or on a narrow screen.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#F3F4F6;border-radius:16px;padding:20px;height:400px;width:100%;box-sizing:border-box">
+<div style="width:240px;height:290px;border:10px solid #141A2E;border-radius:32px;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;gap:10px;padding:14px"><div style="height:80px;flex-shrink:0;border-radius:10px;background:#C9733A"></div><p style="font-size:24px;font-weight:700">Lamp 01</p><div style="height:80px;flex-shrink:0;border-radius:10px;background:#5B6B8C"></div><p style="font-size:24px;font-weight:700">Lamp 02</p></div>
+<p style="font-size:24px;font-weight:600;color:#047857">↕ scroll in one direction only</p>
+</div></div></div>
+
+<figcaption>Columns stack into one, so everything is reachable by scrolling down.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Test: set the browser to 1280 px wide and zoom to 400%, or use DevTools at 320 px wide. Maps, data tables and 3D canvases can scroll in two directions, but the text around them must reflow.</p></details>
+</article><article class="crit reveal" id="c-1-4-13">
+<div class="crit-head"><span class="num" style="background:#6D28D9">1.4.13</span><span class="lvl" style="color:#4C1D95">Level AA</span></div>
+<h3>Content on hover or focus</h3>
+<p class="meaning">Tooltips and pop-ups can be dismissed, hovered over, and stay until you&#x27;re done.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:28px;font-weight:600"><u>Ceramics</u></p>
+<div style="background:#141A2E;border-radius:12px;padding:16px 20px;width:460px"><p style="font-size:24px;color:#FFFFFF">Hand-built lamps, 2024–2026</p></div>
+<div style="height:8px"></div>
+<p style="font-size:24px;font-weight:600;color:#B42318">✗ Vanishes when the pointer moves onto it</p>
+<p style="font-size:24px;font-weight:600;color:#B42318">✗ No way to dismiss it, so it covers content</p>
+</div></div></div>
+
+<figcaption>Screen-magnifier users have to move the pointer to read it, and it disappears.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:28px;font-weight:600"><u>Ceramics</u></p>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:#141A2E;border-radius:12px;padding:16px 20px;width:560px"><p style="font-size:24px;color:#FFFFFF">Hand-built lamps, 2024–2026</p><p style="font-size:24px;color:#D1D5DB">Esc ✕</p></div>
+<div style="height:8px"></div>
+<p style="font-size:24px;font-weight:600;color:#047857">✓ Stays while you hover over it</p>
+<p style="font-size:24px;font-weight:600;color:#047857">✓ Esc closes it without moving focus</p>
+</div></div></div>
+
+<figcaption>Dismissable, hoverable and persistent: the three checks for any hover content.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Also show the tooltip on keyboard focus, not only on mouse hover. Native title attributes fail this criterion in most browsers, so build a proper tooltip instead.</p></details>
+</article><article class="crit reveal" id="c-2-4-7">
+<div class="crit-head"><span class="num" style="background:#6D28D9">2.4.7</span><span class="lvl" style="color:#4C1D95">Level AA</span></div>
+<h3>Focus visible</h3>
+<p class="meaning">When you use the keyboard, you can always see which element has focus.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:20px"><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:14px 26px"><p style="font-size:26px;font-weight:600">Work</p></div><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:14px 26px"><p style="font-size:26px;font-weight:600">About</p></div><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:14px 26px"><p style="font-size:26px;font-weight:600">Contact</p></div></div>
+<p style="font-size:26px;font-weight:600;color:#B42318">Which one has focus?</p>
+</div></div></div>
+
+<figcaption>outline: none removed the focus ring. Keyboard users are navigating blind.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:20px"><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:14px 26px"><p style="font-size:26px;font-weight:600">Work</p></div><div style="border:4px solid #6D28D9;border-radius:16px;padding:4px"><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:14px 26px"><p style="font-size:26px;font-weight:600">About</p></div></div><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:14px 26px"><p style="font-size:26px;font-weight:600">Contact</p></div></div>
+<p style="font-size:26px;font-weight:600;color:#047857">Clearly “About”</p>
+</div></div></div>
+
+<figcaption>A branded focus ring, shown only for keyboard users with :focus-visible.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Designers often remove the outline because it looks ugly on mouse click. :focus-visible solves that: the ring shows for keyboard users only. Restyle it, never delete it.</p></details>
+</article><article class="crit reveal" id="c-2-5-7">
+<div class="crit-head"><span class="num" style="background:#6D28D9">2.5.7</span><span class="lvl" style="color:#4C1D95">Level AA</span><span class="new">New in 2.2</span></div>
+<h3>Dragging movements</h3>
+<p class="meaning">Anything done by dragging can also be done with single clicks or taps.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#1F2937;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box;position:relative">
+<div class="anim-sway" style="width:200px;height:200px;border-radius:100px;background:radial-gradient(circle at 40% 35%, #F4C38B 0%, #C9733A 45%, #5B3A29 100%)"></div>
+<p style="font-size:26px;color:#E5E7EB">⟷ Drag to rotate</p>
+<div class="anim-cursor"></div></div></div></div>
+
+<figcaption>Orbit controls only: people with tremors or using a head pointer can&#x27;t drag.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#1F2937;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div class="anim-steps" style="width:200px;height:200px;border-radius:100px;background:radial-gradient(circle at 40% 35%, #F4C38B 0%, #C9733A 45%, #5B3A29 100%)"></div>
+<div style="display:flex;gap:12px"><div class="anim-press" style="width:64px;height:64px;background:#FFFFFF;border-radius:12px;display:flex;align-items:center;justify-content:center;animation-delay:0.0s"><p style="font-size:30px;font-weight:700;color:#141A2E">←</p></div><div class="anim-press" style="width:64px;height:64px;background:#FFFFFF;border-radius:12px;display:flex;align-items:center;justify-content:center;animation-delay:0.75s"><p style="font-size:30px;font-weight:700;color:#141A2E">→</p></div><div class="anim-press" style="width:64px;height:64px;background:#FFFFFF;border-radius:12px;display:flex;align-items:center;justify-content:center;animation-delay:1.5s"><p style="font-size:30px;font-weight:700;color:#141A2E">+</p></div><div class="anim-press" style="width:64px;height:64px;background:#FFFFFF;border-radius:12px;display:flex;align-items:center;justify-content:center;animation-delay:2.25s"><p style="font-size:30px;font-weight:700;color:#141A2E">−</p></div></div>
+</div></div></div>
+
+<figcaption>Rotate and zoom buttons alongside dragging. They also give keyboard users access.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>This is the criterion most experimental 3D sites fail. Applies to orbit controls, sliders, drag-to-reorder lists, and before/after image comparers. Dragging can stay; it just can&#x27;t be the only way.</p></details>
+</article><article class="crit reveal" id="c-2-5-8">
+<div class="crit-head"><span class="num" style="background:#6D28D9">2.5.8</span><span class="lvl" style="color:#4C1D95">Level AA</span><span class="new">New in 2.2</span></div>
+<h3>Target size (minimum)</h3>
+<p class="meaning">Click and tap targets are at least 24 × 24 px, or spaced so a 24 px circle fits around each one.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;gap:4px"><div style="width:16px;height:16px;background:#141A2E;border-radius:3px"></div><div style="width:16px;height:16px;background:#141A2E;border-radius:3px"></div><div style="width:16px;height:16px;background:#141A2E;border-radius:3px"></div><div style="width:16px;height:16px;background:#141A2E;border-radius:3px"></div><div style="width:16px;height:16px;background:#141A2E;border-radius:3px"></div></div>
+<p style="font-size:26px;font-weight:600;color:#B42318">16 px icons, 4 px apart</p>
+</div></div></div>
+
+<figcaption>Tiny social icons in a footer: easy to mis-tap, especially with a tremor.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;gap:16px"><div style="width:48px;height:48px;background:#141A2E;border-radius:10px"></div><div style="width:48px;height:48px;background:#141A2E;border-radius:10px"></div><div style="width:48px;height:48px;background:#141A2E;border-radius:10px"></div><div style="width:48px;height:48px;background:#141A2E;border-radius:10px"></div><div style="width:48px;height:48px;background:#141A2E;border-radius:10px"></div></div>
+<p style="font-size:26px;font-weight:600;color:#047857">48 px targets, 16 px apart</p>
+</div></div></div>
+
+<figcaption>The icon can stay small if its clickable area is padded out to 24 px or more.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Links inside a sentence are exempt. The AAA version (2.5.5) asks for 44 × 44 px, which is the size Apple and Google recommend for touch anyway.</p></details>
+</article>
+</section><section class="level" id="level-aaa" style="--tint:#ECFDF5;--col:#047857;--dark:#064E3B" aria-labelledby="level-aaa-h">
+<div class="level-head reveal">
+<div class="badge" aria-hidden="true">AAA</div>
+<div><h2 id="level-aaa-h">Level AAA: the highest bar</h2><p>Stricter, and not always possible across a whole site. Apply it where it matters most. Two more AAA criteria, 2.4.12 and 2.4.13, are in the New in 2.2 section.</p></div>
+</div>
+<nav class="mini-toc" aria-label="Level AAA: the highest bar criteria"><ul><li><a href="#c-1-4-6"><span>1.4.6</span> Contrast (enhanced)</a></li><li><a href="#c-2-3-3"><span>2.3.3</span> Animation from interactions</a></li><li><a href="#c-2-5-5"><span>2.5.5</span> Target size (enhanced)</a></li><li><a href="#c-2-2-3"><span>2.2.3</span> No timing</a></li><li><a href="#c-1-4-8"><span>1.4.8</span> Visual presentation</a></li><li><a href="#c-3-1-5"><span>3.1.5</span> Reading level</a></li></ul></nav>
+<article class="crit reveal" id="c-1-4-6">
+<div class="crit-head"><span class="num" style="background:#047857">1.4.6</span><span class="lvl" style="color:#064E3B">Level AAA</span></div>
+<h3>Contrast (enhanced)</h3>
+<p class="meaning">Text contrast of at least 7 : 1, or 4.5 : 1 for large text.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails AAA</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#FFFFFF;border:2px solid #E5E7EB;border-radius:16px;padding:32px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:40px;font-weight:700">Ceramics, 2026</p>
+<p style="font-size:28px;line-height:1.4;color:#6B7280">Hand-built lamps, scanned and rendered as interactive 3D objects.</p>
+<div style="display:flex"><p style="font-size:26px;font-weight:700;color:#B42318;background:#FEE4E2;padding:6px 16px;border-radius:999px">4.8 : 1 · passes AA only</p></div>
+</div></div></div>
+
+<figcaption>Mid-grey body text is fine for AA but still hard for many people with low vision.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#FFFFFF;border:2px solid #E5E7EB;border-radius:16px;padding:32px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:40px;font-weight:700">Ceramics, 2026</p>
+<p style="font-size:28px;line-height:1.4;color:#1F2937">Hand-built lamps, scanned and rendered as interactive 3D objects.</p>
+<div style="display:flex"><p style="font-size:26px;font-weight:700;color:#065F46;background:#D1FAE5;padding:6px 16px;border-radius:999px">15 : 1</p></div>
+</div></div></div>
+
+<figcaption>Near-black body text: easy to read in sunlight, on cheap screens, at any age.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>A good AAA habit that costs nothing: use near-black for body text and keep the soft greys for large headings or decoration. Same tools as 1.4.3: the WebAIM checker or DevTools.</p></details>
+</article><article class="crit reveal" id="c-2-3-3">
+<div class="crit-head"><span class="num" style="background:#047857">2.3.3</span><span class="lvl" style="color:#064E3B">Level AAA</span></div>
+<h3>Animation from interactions</h3>
+<p class="meaning">Motion triggered by scrolling or clicking can be turned off, unless it&#x27;s essential.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#F3F4F6;border-radius:16px;padding:24px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:20px">
+<div style="width:180px;height:140px;background:#1F2937;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden"><div style="width:50px;height:50px;border-radius:25px;background:#C9733A"></div></div>
+<p style="font-size:28px;font-weight:700;color:#B42318">⤻ swoop</p>
+<div style="width:180px;height:140px;background:#1F2937;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden"><div class="anim-swoop" style="width:110px;height:110px;border-radius:55px;background:#C9733A"></div></div>
+</div>
+<p style="font-size:24px;font-weight:600;color:#B42318;background:#FEE4E2;padding:6px 16px;border-radius:999px">Reduce motion is on, but ignored</p>
+</div></div></div>
+
+<figcaption>Scrolling sends the camera flying 180°, which can cause nausea and dizziness.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#F3F4F6;border-radius:16px;padding:24px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:20px">
+<div style="width:180px;height:140px;background:#1F2937;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden"><div style="width:50px;height:50px;border-radius:25px;background:#C9733A"></div></div>
+<p style="font-size:28px;font-weight:700;color:#047857">fade</p>
+<div style="width:180px;height:140px;background:#1F2937;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden"><div class="anim-fade" style="width:110px;height:110px;border-radius:55px;background:#C9733A"></div></div>
+</div>
+<p style="font-size:24px;font-weight:600;color:#065F46;background:#D1FAE5;padding:6px 16px;border-radius:999px">Reduce motion on: cross-fade only</p>
+</div></div></div>
+
+<figcaption>The site reads prefers-reduced-motion and swaps camera flights for gentle fades.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>The most relevant AAA criterion for scroll-driven 3D sites. In code: check the prefers-reduced-motion media query, then shorten or skip camera tweens and parallax. A visible &quot;reduce motion&quot; toggle on the page is even better.</p></details>
+</article><article class="crit reveal" id="c-2-5-5">
+<div class="crit-head"><span class="num" style="background:#047857">2.5.5</span><span class="lvl" style="color:#064E3B">Level AAA</span></div>
+<h3>Target size (enhanced)</h3>
+<p class="meaning">Click and tap targets are at least 44 × 44 px.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails AAA</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;gap:12px;background:#FFFFFF;border-radius:16px;padding:16px 24px"><div style="width:32px;height:32px;background:#141A2E;border-radius:8px"></div><div style="width:32px;height:32px;background:#141A2E;border-radius:8px"></div><div style="width:32px;height:32px;background:#141A2E;border-radius:8px"></div><div style="width:32px;height:32px;background:#141A2E;border-radius:8px"></div></div>
+<p style="font-size:26px;font-weight:600;color:#B42318">32 px: passes AA, fails AAA</p>
+</div></div></div>
+
+<figcaption>Fine with a mouse, but fiddly for thumbs, tremors or when walking.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;gap:16px;background:#FFFFFF;border-radius:16px;padding:16px 24px"><div style="width:52px;height:52px;background:#141A2E;border-radius:12px"></div><div style="width:52px;height:52px;background:#141A2E;border-radius:12px"></div><div style="width:52px;height:52px;background:#141A2E;border-radius:12px"></div><div style="width:52px;height:52px;background:#141A2E;border-radius:12px"></div></div>
+<p style="font-size:26px;font-weight:600;color:#047857">44 px or more</p>
+</div></div></div>
+
+<figcaption>Thumb-sized targets: the size Apple and Google recommend for touch.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Compare with 2.5.8 at AA (24 px). For mobile-first student sites, 44 px is an easy default for every button and icon target, even when the visible icon is smaller.</p></details>
+</article><article class="crit reveal" id="c-2-2-3">
+<div class="crit-head"><span class="num" style="background:#047857">2.2.3</span><span class="lvl" style="color:#064E3B">Level AAA</span></div>
+<h3>No timing</h3>
+<p class="meaning">No time limits at all, except for real-time events like live auctions.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;justify-content:space-between"><p style="font-size:24px;color:#4B5563">Question 3 of 5</p><div style="display:flex;align-items:center;gap:10px"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#B42318;width:30px;height:30px;flex-shrink:0" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><p style="font-size:28px;font-weight:700;color:#B42318">0:09</p></div></div>
+<div style="display:flex;height:12px;border-radius:6px;overflow:hidden"><div class="anim-drain" style="flex:1;background:#B42318"></div><div style="flex:6;background:#E5E7EB"></div></div>
+<p style="font-size:28px;font-weight:700">Which glaze gives this crackle effect?</p>
+<div style="background:#FFFFFF;border-radius:10px;padding:12px 20px"><p style="font-size:24px">Raku</p></div>
+<div style="background:#FFFFFF;border-radius:10px;padding:12px 20px"><p style="font-size:24px">Celadon</p></div>
+</div></div></div>
+
+<figcaption>A countdown punishes slow readers, screen-reader users and people with anxiety.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;justify-content:space-between"><p style="font-size:24px;color:#4B5563">Question 3 of 5</p><p style="font-size:24px;font-weight:600;color:#047857">Take your time</p></div>
+<div style="display:flex;height:12px;border-radius:6px;overflow:hidden"><div style="flex:3;background:#047857"></div><div style="flex:2;background:#E5E7EB"></div></div>
+<p style="font-size:28px;font-weight:700">Which glaze gives this crackle effect?</p>
+<div style="background:#FFFFFF;border-radius:10px;padding:12px 20px"><p style="font-size:24px">Raku</p></div>
+<div style="background:#FFFFFF;border-radius:10px;padding:12px 20px"><p style="font-size:24px">Celadon</p></div>
+</div></div></div>
+
+<figcaption>The bar shows progress, not a deadline. Users move on when they&#x27;re ready.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>At Level A, 2.2.1 Timing Adjustable already requires that users can turn off, adjust or extend most time limits. AAA goes further: no time limits at all. Also watch out for intro sequences that auto-advance before people have read them.</p></details>
+</article><article class="crit reveal" id="c-1-4-8">
+<div class="crit-head"><span class="num" style="background:#047857">1.4.8</span><span class="lvl" style="color:#064E3B">Level AAA</span></div>
+<h3>Visual presentation</h3>
+<p class="meaning">Text blocks are easy to read: max 80 characters per line, not justified, 1.5 line spacing.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px;background:#FFFFFF;border:2px solid #E5E7EB;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:24px;line-height:1.1;text-align:justify;letter-spacing:-0.5px;color:#374151">Each lamp starts as a hand-built clay form. We scan it, clean up the mesh, and light it in a real-time scene so you can turn it in your hand, zoom into the glaze and see how light moves across its surface at different times of day, from soft morning light to warm evening tones.</p>
+<p style="font-size:24px;font-weight:600;color:#B42318">Justified · cramped lines · full width</p>
+</div></div></div>
+
+<figcaption>Uneven word gaps and tight lines make readers with dyslexia lose their place.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px;background:#FFFFFF;border:2px solid #E5E7EB;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:24px;line-height:1.55;text-align:left;color:#1F2937;width:560px">Each lamp starts as a hand-built clay form. We scan it, clean up the mesh, and light it in a real-time scene.</p>
+<p style="font-size:24px;line-height:1.55;text-align:left;color:#1F2937;width:560px">You can turn it, zoom into the glaze and watch the light change.</p>
+<p style="font-size:24px;font-weight:600;color:#047857">Left-aligned · 1.5 spacing · short lines</p>
+</div></div></div>
+
+<figcaption>A narrow column, ragged right edge, and room between lines and paragraphs.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>The full criterion also asks that users can choose text and background colours, and that text can be resized to 200% without horizontal scrolling. In CSS: max-width around 65ch, line-height 1.5, and no text-align: justify.</p></details>
+</article><article class="crit reveal" id="c-3-1-5">
+<div class="crit-head"><span class="num" style="background:#047857">3.1.5</span><span class="lvl" style="color:#064E3B">Level AAA</span></div>
+<h3>Reading level</h3>
+<p class="meaning">Text is understandable at lower-secondary level, or a simpler version is offered.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#FFFFFF;border:2px solid #E5E7EB;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:24px;font-weight:700;color:#4B5563">ARTIST STATEMENT</p>
+<p style="font-size:26px;line-height:1.45;color:#1F2937">This practice interrogates the liminal ontologies of materiality, foregrounding a post-digital phenomenology wherein the haptic and the virtual are recursively co-constituted.</p>
+</div></div></div>
+
+<figcaption>Dense jargon shuts out many readers, including people with cognitive disabilities and non-native speakers.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#FFFFFF;border:2px solid #E5E7EB;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;flex-direction:column;gap:8px;background:#D1FAE5;border-radius:12px;padding:16px 20px"><p style="font-size:24px;font-weight:700;color:#065F46">In short</p><p style="font-size:26px;line-height:1.45;color:#1F2937">I make clay lamps, scan them, and let you explore them in 3D.</p></div>
+<p style="font-size:24px;font-weight:700;color:#4B5563">ARTIST STATEMENT</p>
+<p style="font-size:24px;line-height:1.45;color:#4B5563">This practice interrogates the liminal ontologies of materiality…</p>
+</div></div></div>
+
+<figcaption>Keep the full statement, and lead with a plain-language summary.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Students don&#x27;t have to give up their critical voice; they add a plain summary on top. Tools like Hemingway Editor give a quick reading-level estimate.</p></details>
+</article>
+</section><section class="level" id="new-in-22" style="--tint:#F1F1EC;--col:#141A2E;--dark:#141A2E" aria-labelledby="new-in-22-h">
+<div class="level-head reveal">
+<div class="badge" aria-hidden="true">2.2</div>
+<div><h2 id="new-in-22-h">New in WCAG 2.2</h2><p>Nine success criteria were added in WCAG 2.2: two at A, four at AA and three at AAA. Two of them, Dragging movements (2.5.7) and Target size (2.5.8), are covered in the AA section. 4.1.1 Parsing was removed.</p></div>
+</div>
+<nav class="mini-toc" aria-label="New in WCAG 2.2 criteria"><ul><li><a href="#c-2-4-11"><span>2.4.11</span> Focus not obscured (minimum)</a></li><li><a href="#c-2-4-12"><span>2.4.12</span> Focus not obscured (enhanced)</a></li><li><a href="#c-2-4-13"><span>2.4.13</span> Focus appearance</a></li><li><a href="#c-3-2-6"><span>3.2.6</span> Consistent help</a></li><li><a href="#c-3-3-7"><span>3.3.7</span> Redundant entry</a></li><li><a href="#c-3-3-8"><span>3.3.8</span> Accessible authentication (minimum)</a></li><li><a href="#c-3-3-9"><span>3.3.9</span> Accessible authentication (enhanced)</a></li></ul></nav>
+<article class="crit reveal" id="c-2-4-11">
+<div class="crit-head"><span class="num" style="background:#6D28D9">2.4.11</span><span class="lvl" style="color:#4C1D95">Level AA</span><span class="new">New in 2.2</span></div>
+<h3>Focus not obscured (minimum)</h3>
+<p class="meaning">The focused element is never completely hidden by banners, sticky bars or overlays.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:26px">Home</p><p style="font-size:26px">Work</p><p style="font-size:26px">About</p><p style="font-size:26px">Shop</p><p style="font-size:26px">Press</p>
+<div style="display:flex"><p style="font-size:26px;border:4px solid #6D28D9;border-radius:8px;padding:2px 10px">Contact</p></div>
+<div style="position:absolute;left:0px;right:0px;bottom:0px;height:180px;background:#141A2E;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:24px 28px"><p style="font-size:24px;color:#FFFFFF">We use cookies to improve your visit.</p><div style="display:flex"><p style="font-size:24px;font-weight:700;color:#141A2E;background:#FFFFFF;padding:6px 20px;border-radius:8px">Accept</p></div></div>
+</div></div></div>
+
+<figcaption>The cookie banner sits right on top of the link you just tabbed to.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:26px">Home</p><p style="font-size:26px">Work</p><p style="font-size:26px">About</p>
+<div style="display:flex"><p style="font-size:26px;border:4px solid #6D28D9;border-radius:8px;padding:2px 10px">Contact</p></div>
+<div style="position:absolute;left:0px;right:0px;bottom:0px;height:110px;background:#141A2E;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 28px"><p style="font-size:24px;color:#FFFFFF">We use cookies.</p><p style="font-size:24px;font-weight:700;color:#141A2E;background:#FFFFFF;padding:6px 20px;border-radius:8px">Accept</p></div>
+</div></div></div>
+
+<figcaption>The page scrolls so the focused link always stays above the banner.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Fixes: CSS scroll-padding-bottom equal to the sticky bar&#x27;s height, smaller banners, or banners that must be dismissed before you continue. Test by tabbing through the page with the cookie banner open.</p></details>
+</article><article class="crit reveal" id="c-2-4-12">
+<div class="crit-head"><span class="num" style="background:#047857">2.4.12</span><span class="lvl" style="color:#064E3B">Level AAA</span><span class="new">New in 2.2</span></div>
+<h3>Focus not obscured (enhanced)</h3>
+<p class="meaning">No part of the focused element is hidden, not even a corner.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails AAA</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:26px">Home</p><p style="font-size:26px">Work</p><p style="font-size:26px">About</p><p style="font-size:26px">Shop</p>
+<div style="display:flex"><p style="font-size:26px;border:4px solid #047857;border-radius:8px;padding:2px 10px">Contact</p></div>
+<div style="position:absolute;left:0px;right:0px;bottom:0px;height:165px;background:#141A2E;display:flex;align-items:center;padding:24px 28px"><p style="font-size:24px;color:#FFFFFF">Sticky footer · © My Portfolio</p></div>
+</div></div></div>
+
+<figcaption>Half-hidden behind a sticky footer: passes AA (2.4.11), but fails AAA.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:26px">Home</p><p style="font-size:26px">Work</p><p style="font-size:26px">About</p><p style="font-size:26px">Shop</p>
+<div style="display:flex"><p style="font-size:26px;border:4px solid #047857;border-radius:8px;padding:2px 10px">Contact</p></div>
+<div style="position:absolute;left:0px;right:0px;bottom:0px;height:100px;background:#141A2E;display:flex;align-items:center;padding:20px 28px"><p style="font-size:24px;color:#FFFFFF">Sticky footer · © My Portfolio</p></div>
+</div></div></div>
+
+<figcaption>The focused link and its whole focus ring are fully in view.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>The AA version allows partial overlap. AAA wants the whole element visible. The same fix works for both: scroll-padding on the page that matches the height of any sticky header or footer.</p></details>
+</article><article class="crit reveal" id="c-2-4-13">
+<div class="crit-head"><span class="num" style="background:#047857">2.4.13</span><span class="lvl" style="color:#064E3B">Level AAA</span><span class="new">New in 2.2</span></div>
+<h3>Focus appearance</h3>
+<p class="meaning">The focus indicator is big enough and contrasting enough to spot at a glance.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="border:1px solid #D1D5DB;border-radius:16px;padding:4px"><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:18px 44px"><p style="font-size:30px;font-weight:600">Subscribe</p></div></div>
+<p style="font-size:26px;font-weight:600;color:#B42318">1 px ring, about 1.3 : 1 contrast</p>
+</div></div></div>
+
+<figcaption>A faint, thin ring is technically “visible” but very easy to miss.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="border:4px solid #141A2E;border-radius:18px;padding:4px"><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:18px 44px"><p style="font-size:30px;font-weight:600">Subscribe</p></div></div>
+<p style="font-size:26px;font-weight:600;color:#047857">4 px ring, about 15 : 1 contrast</p>
+</div></div></div>
+
+<figcaption>A solid ring at least 2 px thick, with 3 : 1 contrast between focused and unfocused states.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>This criterion was a minimum (AA) in drafts, but the final 2.2 standard put it at AAA. It&#x27;s still the clearest target for designing focus styles: aim for it even when you only need AA.</p></details>
+</article><article class="crit reveal" id="c-3-2-6">
+<div class="crit-head"><span class="num" style="background:#1D4ED8">3.2.6</span><span class="lvl" style="color:#1E3A8A">Level A</span><span class="new">New in 2.2</span></div>
+<h3>Consistent help</h3>
+<p class="meaning">If help or contact options appear on several pages, they&#x27;re in the same place each time.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;gap:16px;background:#F3F4F6;border-radius:16px;padding:20px;height:400px;width:100%;box-sizing:border-box">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:#FFFFFF;border-radius:12px;padding:14px"><div style="display:flex;align-items:center;justify-content:space-between"><p style="font-size:24px;font-weight:700">Home</p><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:2px 12px;border-radius:999px">Help</p></div><div style="height:90px;background:#E5E7EB;border-radius:8px"></div><div style="height:28px"></div></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:#FFFFFF;border-radius:12px;padding:14px"><p style="font-size:24px;font-weight:700">Work</p><div style="height:90px;background:#E5E7EB;border-radius:8px"></div><div style="display:flex"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:2px 12px;border-radius:999px">Help</p></div></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:#FFFFFF;border-radius:12px;padding:14px"><p style="font-size:24px;font-weight:700">Shop</p><div style="height:90px;background:#E5E7EB;border-radius:8px"></div><div style="height:28px"></div></div>
+</div></div></div>
+
+<figcaption>Help moves around, then vanishes on the Shop page.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;gap:16px;background:#F3F4F6;border-radius:16px;padding:20px;height:400px;width:100%;box-sizing:border-box">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:#FFFFFF;border-radius:12px;padding:14px"><p style="font-size:24px;font-weight:700">Home</p><div style="height:90px;background:#E5E7EB;border-radius:8px"></div><div style="display:flex;justify-content:end"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:2px 12px;border-radius:999px">Help</p></div></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:#FFFFFF;border-radius:12px;padding:14px"><p style="font-size:24px;font-weight:700">Work</p><div style="height:90px;background:#E5E7EB;border-radius:8px"></div><div style="display:flex;justify-content:end"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:2px 12px;border-radius:999px">Help</p></div></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:#FFFFFF;border-radius:12px;padding:14px"><p style="font-size:24px;font-weight:700">Shop</p><div style="height:90px;background:#E5E7EB;border-radius:8px"></div><div style="display:flex;justify-content:end"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:2px 12px;border-radius:999px">Help</p></div></div>
+</div></div></div>
+
+<figcaption>Help sits in the same corner on every page, so people know where to look.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Help means contact details, a contact form, a chat, or a FAQ link. This criterion doesn&#x27;t require help to exist, only that it&#x27;s consistent when it does. Especially helpful for people with cognitive disabilities.</p></details>
+</article><article class="crit reveal" id="c-3-3-7">
+<div class="crit-head"><span class="num" style="background:#1D4ED8">3.3.7</span><span class="lvl" style="color:#1E3A8A">Level A</span><span class="new">New in 2.2</span></div>
+<h3>Redundant entry</h3>
+<p class="meaning">Don&#x27;t make people re-type what they already entered in the same process.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:24px;color:#4B5563">Step 2 of 3 · Billing</p>
+<p style="font-size:28px;font-weight:700">Billing address</p>
+<div style="background:#FFFFFF;border:2px solid #9CA3AF;border-radius:10px;padding:12px 20px"><p style="font-size:24px;color:#6B7280">Street</p></div>
+<div style="background:#FFFFFF;border:2px solid #9CA3AF;border-radius:10px;padding:12px 20px"><p style="font-size:24px;color:#6B7280">City</p></div>
+<p style="font-size:24px;font-weight:600;color:#B42318">You already typed this in step 1</p>
+</div></div></div>
+
+<figcaption>Re-typing is tiring and error-prone, especially for people with memory or motor impairments.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:24px;color:#4B5563">Step 2 of 3 · Billing</p>
+<p style="font-size:28px;font-weight:700">Billing address</p>
+<div style="display:flex;align-items:center;gap:16px"><div style="width:40px;height:40px;background:#047857;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:26px;font-weight:700;color:#FFFFFF">✓</p></div><p style="font-size:26px">Same as shipping address</p></div>
+<div style="background:#FFFFFF;border-radius:10px;padding:14px 20px"><p style="font-size:24px;color:#374151">14 Example Street, Cairo</p></div>
+</div></div></div>
+
+<figcaption>One checkbox reuses what they already gave. Autofill works too.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Within a single process, information already entered must either be filled in automatically or be available to select. Exceptions: re-entering a password for security, or when the old information is no longer valid.</p></details>
+</article><article class="crit reveal" id="c-3-3-8">
+<div class="crit-head"><span class="num" style="background:#6D28D9">3.3.8</span><span class="lvl" style="color:#4C1D95">Level AA</span><span class="new">New in 2.2</span></div>
+<h3>Accessible authentication (minimum)</h3>
+<p class="meaning">Logging in never depends on remembering, transcribing or solving something, without an alternative.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px;background:#F3F4F6;border-radius:16px;padding:24px 28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:26px;font-weight:700">Password</p>
+<div style="background:#FFFFFF;border:2px solid #9CA3AF;border-radius:10px;padding:10px 20px"><p style="font-size:26px">••••••••</p></div>
+<p style="font-size:24px;font-weight:600;color:#B42318">Pasting is disabled on this field</p>
+<div style="display:flex;align-items:center;gap:16px"><p style="font-size:24px">Type the code:</p><p style="font-family:serif;font-size:34px;font-style:italic;letter-spacing:6px;color:#4B5563;background:#E5E7EB;padding:2px 16px;border-radius:8px;transform:skewX(-14deg)">x7Qp</p></div>
+</div></div></div>
+
+<figcaption>Blocks password managers and depends on memory and squinting.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px;background:#F3F4F6;border-radius:16px;padding:24px 28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:26px;font-weight:700">Password</p>
+<div style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:2px solid #9CA3AF;border-radius:10px;padding:10px 20px"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#047857;width:30px;height:30px;flex-shrink:0" viewbox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2M16 7l3 3M19 4l2 2"></path></svg><p style="font-size:24px;color:#374151">Filled by password manager</p></div>
+<p style="font-size:24px;color:#4B5563">or</p>
+<div style="display:flex"><p style="font-size:24px;font-weight:700;color:#141A2E;background:#FFFFFF;border:2px solid #141A2E;padding:8px 20px;border-radius:10px">Email me a sign-in link</p></div>
+</div></div></div>
+
+<figcaption>Paste and autofill work, and there&#x27;s a no-memory option.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Allowed at AA: CAPTCHAs that ask you to recognise objects, or to identify content you uploaded yourself. Not allowed without an alternative: remembering a password with paste blocked, transcribing distorted characters, or solving puzzles.</p></details>
+</article><article class="crit reveal" id="c-3-3-9">
+<div class="crit-head"><span class="num" style="background:#047857">3.3.9</span><span class="lvl" style="color:#064E3B">Level AAA</span><span class="new">New in 2.2</span></div>
+<h3>Accessible authentication (enhanced)</h3>
+<p class="meaning">No cognitive test at all to log in, including object or image recognition.</p>
+
+<div class="examples"><figure class="ex fail">
+<p class="verdict"><span aria-hidden="true">✗</span> Fails AAA</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#F3F4F6;border-radius:16px;padding:24px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:26px;font-weight:700">Select all images with bicycles</p>
+<div style="display:grid;grid-template-columns:repeat(3, 88px);gap:8px"><div style="height:88px;background:#9CA3AF;border-radius:6px"></div><div style="height:88px;background:#6B7280;border-radius:6px"></div><div style="height:88px;background:#A8A29E;border-radius:6px"></div><div style="height:88px;background:#78716C;border-radius:6px"></div><div style="height:88px;background:#9CA3AF;border-radius:6px"></div><div style="height:88px;background:#57534E;border-radius:6px"></div><div style="height:88px;background:#A8A29E;border-radius:6px"></div><div style="height:88px;background:#6B7280;border-radius:6px"></div><div style="height:88px;background:#78716C;border-radius:6px"></div></div>
+</div></div></div>
+
+<figcaption>Image-recognition CAPTCHAs are allowed at AA, but not at AAA.</figcaption>
+</figure><figure class="ex pass">
+<p class="verdict"><span aria-hidden="true">✓</span> Passes</p>
+<div class="mock-wrap" aria-hidden="true"><div class="mock"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:#F3F4F6;border-radius:16px;padding:24px;height:400px;width:100%;box-sizing:border-box">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#047857;width:72px;height:72px;flex-shrink:0" viewbox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M10.7 12.3 21 2M16 7l3 3M19 4l2 2"></path></svg>
+<p style="font-size:28px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:14px 32px;border-radius:12px">Sign in with a passkey</p>
+<p style="font-size:24px;color:#4B5563">or get a one-time link by email</p>
+</div></div></div>
+
+<figcaption>Passkeys, email links or device sign-in: nothing to remember or recognise.</figcaption>
+</figure></div>
+<details><summary>How to test</summary><p>Most student betas won&#x27;t have logins. Where they do, passkeys or email magic links meet both the AA and AAA versions of this criterion. Bot protection can run invisibly in the background instead.</p></details>
+</article>
+</section>
+
+<section class="quiz" id="quiz" aria-labelledby="quiz-h">
+<div class="wrap">
+<h2 id="quiz-h">Swipe quiz: pass or fail?</h2>
+<p class="sub">Each card shows an example. Does it meet WCAG 2.2 at Level AA? Swipe <strong>left if it fails</strong>, <strong>right if it passes</strong>. Swiping is a drag, so (true to 2.5.7) you can also use the buttons, or <span class="keys">←</span> <span class="keys">→</span> on your keyboard.</p>
+<template id="qm-a-222-0"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#1F2937;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div class="anim-spin" style="width:200px;height:200px;border-radius:100px;background:radial-gradient(circle at 40% 35%, #F4C38B 0%, #C9733A 45%, #5B3A29 100%)"></div>
+<p style="font-size:26px;color:#E5E7EB">↻ Auto-rotates forever</p>
+</div></template><template id="qm-a-141-1"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:26px;font-weight:700">Email</p>
+<div style="background:#FFFFFF;border:3px solid #D92D20;border-radius:10px;padding:14px 20px"><p style="font-size:26px;color:#111827">name@site</p></div>
+<div style="display:flex;align-items:center;gap:12px"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#B42318;width:32px;height:32px;flex-shrink:0" viewbox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><line x1="12" x2="12" y1="9" y2="13"></line><line x1="12" x2="12.01" y1="17" y2="17"></line></svg><p style="font-size:24px;font-weight:600;color:#B42318">Enter a full email, like name@site.com</p></div>
+<div style="display:flex"><p style="font-size:26px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:12px 32px;border-radius:10px">Send</p></div>
+</div></template><template id="qm-aa-143-0"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#FFFFFF;border:2px solid #E5E7EB;border-radius:16px;padding:32px;height:400px;width:100%;box-sizing:border-box">
+<p style="font-size:40px;font-weight:700">Ceramics, 2026</p>
+<p style="font-size:28px;line-height:1.4;color:#B8BCC6">Hand-built lamps, scanned and rendered as interactive 3D objects.</p>
+<div style="display:flex"><p style="font-size:26px;font-weight:700;color:#B42318;background:#FEE4E2;padding:6px 16px;border-radius:999px">1.9 : 1</p></div>
+</div></template><template id="qm-aa-257-1"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#1F2937;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div class="anim-steps" style="width:200px;height:200px;border-radius:100px;background:radial-gradient(circle at 40% 35%, #F4C38B 0%, #C9733A 45%, #5B3A29 100%)"></div>
+<div style="display:flex;gap:12px"><div class="anim-press" style="width:64px;height:64px;background:#FFFFFF;border-radius:12px;display:flex;align-items:center;justify-content:center;animation-delay:0.0s"><p style="font-size:30px;font-weight:700;color:#141A2E">←</p></div><div class="anim-press" style="width:64px;height:64px;background:#FFFFFF;border-radius:12px;display:flex;align-items:center;justify-content:center;animation-delay:0.75s"><p style="font-size:30px;font-weight:700;color:#141A2E">→</p></div><div class="anim-press" style="width:64px;height:64px;background:#FFFFFF;border-radius:12px;display:flex;align-items:center;justify-content:center;animation-delay:1.5s"><p style="font-size:30px;font-weight:700;color:#141A2E">+</p></div><div class="anim-press" style="width:64px;height:64px;background:#FFFFFF;border-radius:12px;display:flex;align-items:center;justify-content:center;animation-delay:2.25s"><p style="font-size:30px;font-weight:700;color:#141A2E">−</p></div></div>
+</div></template><template id="qm-aa-247-0"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:20px"><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:14px 26px"><p style="font-size:26px;font-weight:600">Work</p></div><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:14px 26px"><p style="font-size:26px;font-weight:600">About</p></div><div style="background:#FFFFFF;border:2px solid #D1D5DB;border-radius:12px;padding:14px 26px"><p style="font-size:26px;font-weight:600">Contact</p></div></div>
+<p style="font-size:26px;font-weight:600;color:#B42318">Which one has focus?</p>
+</div></template><template id="qm-aa-134-1"><div style="flex:1;display:flex;align-items:center;justify-content:center;background:#F3F4F6;border-radius:16px;padding:20px;height:400px;width:100%;box-sizing:border-box">
+<div style="width:220px;height:340px;border:10px solid #141A2E;border-radius:36px;background:#FFFFFF;display:flex;flex-direction:column;gap:12px;padding:16px"><div style="height:130px;border-radius:12px;background:radial-gradient(circle at 50% 45%, #F4C38B 0%, #C9733A 30%, #2B2D42 70%)"></div><p style="font-size:24px;font-weight:700">Lamp 01</p><div style="height:10px;background:#D1D5DB;border-radius:5px"></div><div style="width:120px;height:10px;background:#D1D5DB;border-radius:5px"></div></div>
+</div></template><template id="qm-a-242-0"><div style="flex:1;display:flex;flex-direction:column;gap:0px;background:#D1D5DB;border-radius:16px;padding:20px 20px 0px;height:400px;width:100%;box-sizing:border-box">
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<div style="display:flex;align-items:center;gap:10px;background:#FFFFFF;border-radius:12px 12px 0px 0px;padding:12px 18px"><div style="width:18px;height:18px;border-radius:9px;background:#9CA3AF"></div><p style="font-size:24px">Vite App</p></div>
+<div style="display:flex;align-items:center;gap:10px;background:#E5E7EB;border-radius:12px 12px 0px 0px;padding:12px 18px"><div style="width:18px;height:18px;border-radius:9px;background:#9CA3AF"></div><p style="font-size:24px">Untitled</p></div>
+<div style="display:flex;align-items:center;gap:10px;background:#E5E7EB;border-radius:12px 12px 0px 0px;padding:12px 18px"><div style="width:18px;height:18px;border-radius:9px;background:#9CA3AF"></div><p style="font-size:24px">index.html</p></div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FFFFFF;padding:28px"><div style="width:400px;height:20px;background:#D1D5DB;border-radius:10px"></div><div style="width:560px;height:14px;background:#E5E7EB;border-radius:7px"></div><div style="width:500px;height:14px;background:#E5E7EB;border-radius:7px"></div></div>
+</div></template><template id="qm-n-326-1"><div style="flex:1;display:flex;gap:16px;background:#F3F4F6;border-radius:16px;padding:20px;height:400px;width:100%;box-sizing:border-box">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:#FFFFFF;border-radius:12px;padding:14px"><p style="font-size:24px;font-weight:700">Home</p><div style="height:90px;background:#E5E7EB;border-radius:8px"></div><div style="display:flex;justify-content:end"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:2px 12px;border-radius:999px">Help</p></div></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:#FFFFFF;border-radius:12px;padding:14px"><p style="font-size:24px;font-weight:700">Work</p><div style="height:90px;background:#E5E7EB;border-radius:8px"></div><div style="display:flex;justify-content:end"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:2px 12px;border-radius:999px">Help</p></div></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:#FFFFFF;border-radius:12px;padding:14px"><p style="font-size:24px;font-weight:700">Shop</p><div style="height:90px;background:#E5E7EB;border-radius:8px"></div><div style="display:flex;justify-content:end"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#141A2E;padding:2px 12px;border-radius:999px">Help</p></div></div>
+</div></template><template id="qm-aa-1411-0"><div style="flex:1;display:flex;align-items:center;justify-content:center;border-radius:16px;padding:28px;background:linear-gradient(90deg, #F8EBDD 0%, #E9B98A 50%, #3A2E4A 100%);height:400px;width:100%;box-sizing:border-box">
+<div style="border:2px solid rgba(255,255,255,0.55);border-radius:999px;padding:16px 40px"><p style="font-size:28px;color:rgba(255,255,255,0.85)">Explore the scene</p></div>
+</div></template><template id="qm-a-111-1"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;background:#F3F4F6;border-radius:16px;padding:28px;height:400px;width:100%;box-sizing:border-box">
+<div style="height:200px;border-radius:12px;background:radial-gradient(circle at 50% 45%, #F4C38B 0%, #C9733A 28%, #2B2D42 62%)"></div>
+<div style="display:flex;align-items:center;gap:16px;background:#141A2E;border-radius:12px;padding:16px 20px"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color:#FFFFFF;width:36px;height:36px;flex-shrink:0" viewbox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><p style="font-size:26px;color:#FFFFFF">Screen reader: “3D render of a ceramic lamp, slowly rotating”</p></div>
+</div></template>
+<div class="swipe" id="swipe">
+<div class="deck-area"><div class="card-behind" aria-hidden="true"></div><div class="card-behind two" aria-hidden="true"></div><div id="card-slot"></div></div>
+<div class="swipe-btns"><button type="button" class="btn sw-fail" id="btn-fail"><span aria-hidden="true">←</span> Fails</button><button type="button" class="btn sw-pass" id="btn-pass">Passes <span aria-hidden="true">→</span></button></div>
+<div id="sw-reveal" class="sw-reveal" hidden tabindex="-1"></div>
+</div>
+<div class="score" aria-live="polite"><p id="score-text">0 of 10 swiped · 0 correct</p><button type="button" class="btn" id="reset" style="background:#141A2E;color:#fff">Start again</button></div>
+<div id="result" class="result" hidden tabindex="-1"></div>
+</div>
+</section>
+<section class="block resp" id="responsive" aria-labelledby="resp-h">
+<div class="wrap">
+<p class="eyebrow-dark reveal">Next up</p>
+<h2 id="resp-h" class="reveal">Introduction to responsiveness on the web</h2>
+<p class="sub reveal">A responsive site is one design that adapts to any screen size, input and user setting, from a 320 px phone to a wide monitor, by touch, mouse or keyboard, and at 400% zoom. It's also where several WCAG criteria meet: <a href="#c-1-4-10">1.4.10 Reflow</a>, <a href="#c-1-3-4">1.3.4 Orientation</a>, <a href="#c-2-5-8">2.5.8 Target size</a> and 1.4.4 Resize text.</p>
+
+<div class="rw-demo reveal">
+<div class="rw-controls">
+<fieldset class="rw-presets"><legend>Try a screen size</legend>
+<label><input type="radio" name="rw" value="360"> Phone · 360</label>
+<label><input type="radio" name="rw" value="768"> Tablet · 768</label>
+<label><input type="radio" name="rw" value="1280" checked> Laptop · 1280</label>
+</fieldset>
+<div class="rw-slider"><label for="rw-range">Or drag the width: <output id="rw-out">1280 px</output></label><input type="range" id="rw-range" min="320" max="1440" step="10" value="1280"></div>
+</div>
+<div class="rw-stage" id="rw-stage">
+<div class="rw-frame" id="rw-frame" role="img" aria-label="A sample portfolio page that rearranges itself as the width changes: navigation collapses into a menu button, the 3D scene changes from wide to tall framing, and the project cards go from three columns to one.">
+<div class="rw-page" aria-hidden="true">
+<div class="rw-head"><span class="rw-logo">Studio Clay</span><span class="rw-nav"><span>Work</span><span>About</span><span>Shop</span><span>Contact</span></span><span class="rw-menu">☰ Menu</span></div>
+<div class="rw-hero"><div class="rw-scene"><div class="rw-orb"></div><span class="rw-scene-tag"></span></div><div class="rw-copy"><b>Hand-built lamps, in 3D</b><span>Turn, zoom and light each piece.</span><span class="rw-cta">Explore the collection</span></div></div>
+<div class="rw-grid"><div><i></i><b>Lamp 01</b></div><div><i></i><b>Lamp 02</b></div><div><i></i><b>Lamp 03</b></div></div>
+</div>
+</div>
+</div>
+<p class="rw-status" aria-live="polite" id="rw-status"></p>
+</div>
+
+<h3 class="resp-h3 reveal">Six ideas to design by</h3>
+<div class="grid3">
+<div class="card reveal"><h3>Fluid, not fixed</h3><p>Lay out with proportions (fractions, percentages, max-widths) instead of fixed pixel widths, so content stretches and shrinks smoothly.</p></div>
+<div class="card reveal"><h3>Breakpoints follow content</h3><p>Change the layout where <em>your design</em> breaks, not at “iPhone size”. Resize slowly and watch for the moment it stops working.</p></div>
+<div class="card reveal"><h3>Mobile first</h3><p>Start with the smallest screen: one column, the essentials. Then add columns and extras as space allows.</p></div>
+<div class="card reveal"><h3>Touch is not a mouse</h3><p>No hover on phones, fat fingers, and gestures that can scroll the page. Big targets (44 px), and nothing that only works on hover.</p></div>
+<div class="card reveal"><h3>Respect the person's settings</h3><p>Zoom, larger text, reduce motion, dark mode, landscape lock: the user's settings beat your layout.</p></div>
+<div class="card reveal"><h3>Content stays the same</h3><p>Rearrange and simplify, but don't hide key content from phone users. Same story, different layout.</p></div>
+</div>
+
+<h3 class="resp-h3 reveal">Responsive 3D: canvas and camera</h3>
+<div class="resp-3d">
+<ol class="reveal">
+<li><strong>Size the canvas to its container</strong>, and update it when the window resizes or the phone rotates.</li>
+<li><strong>Reframe the camera</strong> for the aspect ratio: pull back or widen the field of view in portrait so the subject stays in shot.</li>
+<li><strong>Cap the resolution.</strong> Limit pixel ratio to about 2 (1.5 on phones); rendering at 3× retina is slow and drains the battery.</li>
+<li><strong>Lower the complexity on small or slow devices:</strong> fewer lights and particles, smaller textures, simpler models.</li>
+<li><strong>Don't trap the scroll.</strong> Decide whether a swipe moves the page or the camera; never both.</li>
+<li><strong>Have a fallback.</strong> A poster image or static version for when 3D fails or loads too slowly.</li>
+</ol>
+</div>
+
+<h3 class="resp-h3 reveal">Test your beta like this</h3>
+<ul class="checks reveal">
+<li>Browser dev tools device mode at 320, 375, 768 and 1280 px wide</li>
+<li>Zoom to 200% and 400%: does everything still reflow?</li>
+<li>A real phone, in portrait <em>and</em> landscape</li>
+<li>Tab through with the keyboard at a narrow width</li>
+<li>Throttle the network to Slow 4G: what appears first?</li>
+<li>Turn on reduce motion and larger text in your phone's settings</li>
+</ul>
+</div>
+</section>
+
+</main>
+
+<footer><div class="wrap">Source: W3C, Web Content Accessibility Guidelines (WCAG) 2.2, <a href="https://www.w3.org/TR/WCAG22/">w3.org/TR/WCAG22</a>. Examples are illustrative; check each criterion's full wording before auditing.<p class="credit">Created by <a href="https://github.com/AnasMations">AnasMations</a></p></div></footer>
+
+<script>
+document.documentElement.classList.add('js');
+
+// Scale the illustration mock-ups to fit their column
+const fitMocks = (function(){
+  const fit = w => { const m = w.firstElementChild; if (m && w.clientWidth) m.style.zoom = Math.min(1, w.clientWidth / 752); };
+  const ro = 'ResizeObserver' in window ? new ResizeObserver(es => es.forEach(e => fit(e.target))) : null;
+  // Run illustration animations only while they are on screen
+  const vis = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('play', e.isIntersecting)), {threshold:0.15}) : null;
+  return root => root.querySelectorAll('.mock-wrap').forEach(w => { fit(w); ro && ro.observe(w); vis ? vis.observe(w) : w.classList.add('play'); });
+})();
+fitMocks(document);
+
+// Opt-in flash demo for 2.3.1: runs only on click, stops after data-ms
+(function(){
+  document.querySelectorAll('.flash-btn').forEach(btn => {
+    const box = btn.closest('figure').querySelector('.flash-box');
+    if (!box) return;
+    const lab = box.querySelector('p');
+    let timer = null;
+    const stop = () => { clearInterval(timer); timer = null; box.style.background = box.dataset.off; if (lab) lab.style.visibility = ''; btn.disabled = false; };
+    btn.addEventListener('click', () => {
+      if (timer) return;
+      const hz = +btn.dataset.hz, ms = +btn.dataset.ms;
+      let on = false, elapsed = 0; const step = 1000 / (hz * 2);
+      btn.disabled = true; if (lab) lab.style.visibility = 'hidden';
+      timer = setInterval(() => {
+        elapsed += step;
+        if (elapsed > ms || document.documentElement.classList.contains('anim-paused')) return stop();
+        on = !on; box.style.background = on ? box.dataset.on : box.dataset.off;
+      }, step);
+    });
+  });
+})();
+
+
+// Draw POUR -> ability arrows (desktop widths only; text mapping is shown otherwise)
+(function(){
+  const map = document.getElementById('pour-map'); if (!map) return;
+  const svg = map.querySelector('.pm-arrows');
+  const EDGES = [['P','eye','#1D4ED8'],['P','ear','#1D4ED8'],['O','motor','#6D28D9'],['U','cog','#047857'],['R','motor','#C2410C'],['R','cog','#C2410C']];
+  const node = id => map.querySelector(`[data-node="${id}"]`);
+  let drawn = false;
+  function draw(){
+    const wide = getComputedStyle(map.querySelector('.pm-row')).gridTemplateColumns.split(' ').length === 4;
+    map.classList.toggle('pm-wide', wide);
+    svg.innerHTML = ''; if (!wide) return;
+    const box = map.getBoundingClientRect();
+    const outs = {}, ins = {};
+    EDGES.forEach(([f,t]) => { outs[f] = (outs[f]||0)+1; ins[t] = (ins[t]||0)+1; });
+    const oi = {}, ii = {};
+    const colors = [...new Set(EDGES.map(e => e[2]))];
+    let defs = '<defs>' + colors.map((c,k) => `<marker id="pm-ah${k}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`).join('') + '</defs>';
+    let paths = '';
+    EDGES.forEach(([f,t,c]) => {
+      const a = node(f).getBoundingClientRect(), b = node(t).getBoundingClientRect();
+      const ko = oi[f] = (oi[f]||0)+1, ki = ii[t] = (ii[t]||0)+1;
+      const spreadA = (ko - (outs[f]+1)/2) * 46, spreadB = (ki - (ins[t]+1)/2) * 46;
+      const x1 = a.left + a.width/2 + spreadA - box.left, y1 = a.bottom - box.top + 4;
+      const x2 = b.left + b.width/2 + spreadB - box.left, y2 = b.top - box.top - 6;
+      const my = (y2 - y1) * 0.55;
+      paths += `<path class="line" d="M${x1} ${y1} C${x1} ${y1+my}, ${x2} ${y2-my}, ${x2} ${y2}" stroke="${c}" marker-end="url(#pm-ah${colors.indexOf(c)})"/>`;
+      paths += `<circle cx="${x1}" cy="${y1}" r="5" fill="${c}"/>`;
+    });
+    svg.innerHTML = defs + paths;
+    svg.querySelectorAll('path.line').forEach(p => {
+      const L = p.getTotalLength(); p.style.strokeDasharray = L;
+      p.style.strokeDashoffset = drawn ? 0 : L;
+    });
+  }
+  const reveal = () => { drawn = true; svg.querySelectorAll('path.line').forEach(p => p.style.strokeDashoffset = 0); };
+  draw();
+  if ('ResizeObserver' in window) new ResizeObserver(draw).observe(map); else addEventListener('resize', draw);
+  if ('IntersectionObserver' in window){
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)){ reveal(); io.disconnect(); } }, {threshold:0.35});
+    io.observe(map);
+  } else reveal();
+  document.fonts && document.fonts.ready.then(draw);
+})();
+
+
+// Responsive demo: resize a sample page and let container queries reflow it
+(function(){
+  const frame = document.getElementById('rw-frame'); if (!frame) return;
+  const stage = document.getElementById('rw-stage'), range = document.getElementById('rw-range');
+  const out = document.getElementById('rw-out'), status = document.getElementById('rw-status');
+  const page = frame.querySelector('.rw-page');
+  let w = 1280;
+  function apply(){
+    frame.style.width = (w + 20) + 'px';
+    page.style.width = w + 'px';
+    const avail = stage.clientWidth;
+    frame.style.zoom = Math.min(1, avail / (w + 20));
+    out.textContent = w + ' px';
+    range.value = w;
+    const cols = w > 900 ? 3 : w > 620 ? 2 : 1;
+    const nav = w > 620 ? 'full navigation' : 'navigation collapsed into a Menu button';
+    status.textContent = `${w} px wide: ${cols} column${cols>1?'s':''} of projects, ${nav}, ${w > 620 ? 'wide' : 'portrait'} 3D framing.`;
+    document.querySelectorAll('input[name="rw"]').forEach(r => r.checked = +r.value === w);
+  }
+  document.querySelectorAll('input[name="rw"]').forEach(r => r.addEventListener('change', () => { w = +r.value; apply(); }));
+  range.addEventListener('input', () => { w = +range.value; apply(); });
+  if ('ResizeObserver' in window) new ResizeObserver(apply).observe(stage); else addEventListener('resize', apply);
+  apply();
+})();
+
+// Pause / play all animations (WCAG 2.2.2)
+(function(){
+  const btn = document.getElementById('motion-toggle');
+  btn.addEventListener('click', () => {
+    const on = btn.dataset.paused !== 'true';
+    btn.dataset.paused = String(on);
+    btn.textContent = on ? 'Play animations' : 'Pause animations';
+    document.documentElement.classList.toggle('anim-paused', on);
+  });
+})();
+
+// Reveal on scroll (skipped when reduced motion is preferred, via CSS)
+(function(){
+  const els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('in')); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }), {rootMargin:'0px 0px -8% 0px'});
+  els.forEach(e => io.observe(e));
+})();
+
+// Progress bar + current section in nav
+(function(){
+  const bar = document.querySelector('.progress');
+  const onScroll = () => { const h = document.documentElement; const p = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight); bar.style.width = (p*100).toFixed(2)+'%'; };
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+  const links = [...document.querySelectorAll('.topnav ul a')];
+  const targets = links.map(a => document.querySelector(a.getAttribute('href')));
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting){ links.forEach(l => l.removeAttribute('aria-current')); const i = targets.indexOf(e.target); if (i>-1) links[i].setAttribute('aria-current','true'); } });
+  }, {rootMargin:'-40% 0px -55% 0px'});
+  targets.forEach(t => t && io.observe(t));
+})();
+
+// Swipe quiz: left = fails, right = passes (Level AA)
+const CARDS = [
+  {m:"a-222-0", pass:false, crit:"2.2.2 Pause, stop, hide", lvl:"Level A", link:"#c-2-2-2",
+   alt:"A 3D lamp that auto-rotates forever, with no controls.",
+   why:"Motion that lasts more than 5 seconds needs a pause, stop or hide control."},
+  {m:"a-141-1", pass:true, crit:"1.4.1 Use of colour", lvl:"Level A", link:"#c-1-4-1",
+   alt:"An email field with a red border plus a warning icon and the message “Enter a full email, like name@site.com”.",
+   why:"The error is shown with an icon and text, not colour alone."},
+  {m:"aa-143-0", pass:false, crit:"1.4.3 Contrast (minimum)", lvl:"Level AA", link:"#c-1-4-3",
+   alt:"A card with very pale grey body text on white, marked 1.9 : 1.",
+   why:"Body text needs at least 4.5 : 1. This is far too faint."},
+  {m:"aa-257-1", pass:true, crit:"2.5.7 Dragging movements", lvl:"Level AA · New in 2.2", link:"#c-2-5-7",
+   alt:"A 3D lamp with left, right, zoom in and zoom out buttons below it.",
+   why:"Buttons give a single-tap alternative to dragging the 3D view."},
+  {m:"aa-247-0", pass:false, crit:"2.4.7 Focus visible", lvl:"Level AA", link:"#c-2-4-7",
+   alt:"Three identical buttons with no visible keyboard focus, and the question “Which one has focus?”.",
+   why:"Keyboard users must always be able to see where focus is."},
+  {m:"aa-134-1", pass:true, crit:"1.3.4 Orientation", lvl:"Level AA", link:"#c-1-3-4",
+   alt:"A phone held upright showing the 3D lamp page laid out for portrait.",
+   why:"The layout adapts to portrait instead of asking people to rotate."},
+  {m:"a-242-0", pass:false, crit:"2.4.2 Page titled", lvl:"Level A", link:"#c-2-4-2",
+   alt:"Browser tabs titled “Vite App”, “Untitled” and “index.html”.",
+   why:"Each page needs a clear, unique title, not the starter template's default."},
+  {m:"n-326-1", pass:true, crit:"3.2.6 Consistent help", lvl:"Level A · New in 2.2", link:"#c-3-2-6",
+   alt:"Three page thumbnails, each with the Help button in the same bottom-right corner.",
+   why:"Help sits in the same place on every page."},
+  {m:"aa-1411-0", pass:false, crit:"1.4.11 Non-text contrast", lvl:"Level AA", link:"#c-1-4-11",
+   alt:"A thin, see-through outline button over a light-to-dark 3D background, barely visible on the light side.",
+   why:"Controls need 3 : 1 contrast against everything behind them."},
+  {m:"a-111-1", pass:true, crit:"1.1.1 Non-text content", lvl:"Level A", link:"#c-1-1-1",
+   alt:"A 3D render with a screen reader announcing “3D render of a ceramic lamp, slowly rotating”.",
+   why:"The visual has a meaningful text alternative."}
+];
+(function(){
+  const slot = document.getElementById('card-slot');
+  const reveal = document.getElementById('sw-reveal');
+  const bFail = document.getElementById('btn-fail'), bPass = document.getElementById('btn-pass');
+  const scoreText = document.getElementById('score-text');
+  const result = document.getElementById('result');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  let i = 0, correct = 0, busy = false, log = [];
+  const update = () => { scoreText.textContent = `${i} of ${CARDS.length} swiped · ${correct} correct`; };
+
+  function renderCard(){
+    reveal.hidden = true; reveal.innerHTML = '';
+    if (i >= CARDS.length) return finish();
+    const c = CARDS[i];
+    slot.innerHTML = `
+      <div class="sw-card" tabindex="0" role="group" aria-roledescription="card"
+           aria-label="Card ${i+1} of ${CARDS.length}. ${c.alt} Does this pass at Level AA? Press the left arrow for fails or the right arrow for passes.">
+        <span class="stamp pass" aria-hidden="true">PASSES</span><span class="stamp fail" aria-hidden="true">FAILS</span>
+        <div class="mock-wrap" aria-hidden="true"><div class="mock"></div></div>
+        <div class="sw-foot"><p>Pass or fail at AA?</p><span>${i+1} / ${CARDS.length}</span></div>
+      </div>`;
+    const t = document.getElementById('qm-' + c.m);
+    slot.querySelector('.mock').appendChild(t.content.cloneNode(true));
+    fitMocks(slot);
+    bFail.disabled = bPass.disabled = false; busy = false;
+    attachDrag(slot.querySelector('.sw-card'));
+  }
+
+  function attachDrag(card){
+    let x0 = null, dx = 0;
+    const stamps = {pass: card.querySelector('.stamp.pass'), fail: card.querySelector('.stamp.fail')};
+    const paint = () => {
+      card.style.transform = `translateX(${dx}px) rotate(${dx/18}deg)`;
+      const k = Math.min(1, Math.abs(dx) / 120);
+      stamps.pass.style.opacity = dx > 0 ? k : 0;
+      stamps.fail.style.opacity = dx < 0 ? k : 0;
+      card.style.borderColor = dx > 40 ? '#34D399' : dx < -40 ? '#F97066' : 'transparent';
+    };
+    card.addEventListener('pointerdown', e => { if (busy) return; x0 = e.clientX; dx = 0; card.setPointerCapture(e.pointerId); card.classList.add('dragging'); });
+    card.addEventListener('pointermove', e => { if (x0 === null) return; dx = e.clientX - x0; paint(); });
+    const end = () => {
+      if (x0 === null) return; x0 = null; card.classList.remove('dragging');
+      if (Math.abs(dx) > 110) decide(dx > 0);
+      else { dx = 0; paint(); }
+    };
+    card.addEventListener('pointerup', end); card.addEventListener('pointercancel', end);
+    card.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft'){ e.preventDefault(); decide(false); }
+      if (e.key === 'ArrowRight'){ e.preventDefault(); decide(true); }
+    });
+  }
+
+  function decide(saysPass){
+    if (busy || i >= CARDS.length) return; busy = true;
+    bFail.disabled = bPass.disabled = true;
+    const c = CARDS[i], ok = saysPass === c.pass, card = slot.querySelector('.sw-card');
+    if (ok) correct++;
+    log.push({c, ok});
+    card.querySelector('.stamp.' + (saysPass ? 'pass' : 'fail')).style.opacity = 1;
+    card.classList.add('fly');
+    card.style.transform = `translateX(${saysPass ? 140 : -140}%) rotate(${saysPass ? 24 : -24}deg)`;
+    card.style.opacity = 0;
+    i++; update();
+    setTimeout(() => {
+      slot.innerHTML = '';
+      reveal.innerHTML = `
+        <p class="res ${ok ? 'ok' : 'no'}">${ok ? 'Correct!' : 'Not quite.'} You swiped ${saysPass ? 'Passes' : 'Fails'}.</p>
+        <p class="crit-name">This example <strong>${c.pass ? 'passes' : 'fails'}</strong> <strong>${c.crit}</strong></p>
+        <p>${c.lvl}. ${c.why}</p>
+        <div class="row"><button type="button" class="btn" id="next">${i < CARDS.length ? 'Next card →' : 'See my score'}</button><a href="${c.link}">Review this criterion</a></div>`;
+      reveal.hidden = false;
+      reveal.querySelector('#next').addEventListener('click', () => { renderCard(); slot.querySelector('.sw-card')?.focus({preventScroll:true}); });
+      reveal.focus({preventScroll:true});
+    }, reduce.matches ? 0 : 360);
+  }
+
+  function finish(){
+    slot.innerHTML = '';
+    bFail.disabled = bPass.disabled = true;
+    const msg = correct >= CARDS.length - 1 ? 'Excellent: you’re ready to audit your beta.' : correct >= Math.ceil(CARDS.length * 0.7) ? 'Good work. Revisit the ones you missed before auditing your beta.' : 'Worth another scroll through the examples, then try again.';
+    result.innerHTML = `<h3>You scored ${correct} out of ${CARDS.length}</h3><p>${msg}</p><ol>${log.map(r => `<li><span class="${r.ok ? 'ok' : 'no'}">${r.ok ? '✓' : '✗'}</span> ${r.c.crit}: ${r.c.pass ? 'passes' : 'fails'}</li>`).join('')}</ol>`;
+    result.hidden = false; result.focus();
+  }
+
+  bFail.addEventListener('click', () => decide(false));
+  bPass.addEventListener('click', () => decide(true));
+  document.getElementById('reset').addEventListener('click', () => {
+    i = 0; correct = 0; log = []; result.hidden = true; update(); renderCard();
+    slot.querySelector('.sw-card')?.focus();
+  });
+  update(); renderCard();
+})();
+</script>
+</body>
+</html>
